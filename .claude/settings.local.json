@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(otool -L \"/Users/maxli/Desktop/neurescode/dist/ICS Visits 管理.app/Contents/Frameworks/PyQt6/Qt6/plugins/platforms/libqcocoa.dylib\")",
+      "Bash(otool -L /opt/anaconda3/lib/python3.13/site-packages/PyQt6/Qt6/plugins/platforms/libqcocoa.dylib)",
+      "Bash(/opt/anaconda3/bin/python -c \"from PyQt6.QtCore import QT_VERSION_STR; print\\(QT_VERSION_STR\\)\")",
+      "Bash(/opt/anaconda3/bin/pip show *)",
+      "Read(//opt/anaconda3/**)",
+      "Bash(md5 /opt/anaconda3/lib/python3.13/site-packages/PyQt6/Qt6/plugins/platforms/libqcocoa.dylib)",
+      "Bash(md5 \"/Users/maxli/Desktop/neurescode/dist/ICS Visits 管理.app/Contents/Frameworks/PyQt6/Qt6/plugins/platforms/libqcocoa.dylib\")",
+      "Bash(otool -l /opt/anaconda3/lib/python3.13/site-packages/PyQt6/Qt6/plugins/platforms/libqcocoa.dylib)"
+    ]
+  }
+}
