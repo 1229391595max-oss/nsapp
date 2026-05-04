@@ -2,7 +2,8 @@
 set -e
 cd "$(dirname "$0")"
 
-BASE_PYTHON=/opt/anaconda3/bin/python
+BASE_PYTHON=/Library/Frameworks/Python.framework/Versions/3.13/bin/python3
+TARGET_ARCH=universal2
 VENV_DIR="$(pwd)/buildenv"
 
 # ── 1. 创建干净的虚拟环境 ──────────────────────────────────────
@@ -30,6 +31,7 @@ echo "🔨 开始打包..."
 "$PYTHON" -m PyInstaller \
     --noconfirm \
     --windowed \
+    --target-arch "$TARGET_ARCH" \
     --name "ICS Visits 管理" \
     --add-data "$PYQT6_PLUGINS:PyQt6/Qt6/plugins" \
     --runtime-hook rthook_qt.py \
