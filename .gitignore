@@ -1,0 +1,21 @@
+# Build artifacts
+dist/
+build/
+buildenv/
+test/
+*.spec
+dist.zip
+pack1.0/
+
+# Data files (do not upload to GitHub)
+*.xlsx
+*.parquet
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.env
+
+# macOS
+.DS_Store
