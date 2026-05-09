@@ -30,8 +30,156 @@ from PyQt6.QtWidgets import (
     QCheckBox, QTabWidget, QComboBox, QDateEdit, QGroupBox,
     QHeaderView, QMessageBox,
 )
-from PyQt6.QtCore import Qt, QDate
+from PyQt6.QtCore import Qt, QDate, QSettings
 from PyQt6.QtGui import QColor, QFont
+
+
+# =====================
+# 国际化（i18n）
+# =====================
+
+TRANSLATIONS = {
+    "zh": {
+        "window_title": "ICS Visits 管理与金额统计",
+        "lang_label": "语言:",
+        "lang_zh": "中文",
+        "lang_en": "English",
+        "btn_upload": "📤 上传 .ics 文件",
+        "btn_reset": "🔄 重置",
+        "chk_cancelled": "包含已取消事件到 Clean（一般不建议）",
+        "tab_clean": "📋 Clean 数据",
+        "tab_raw": "🧾 Raw 原版",
+        "tab_dup": "🧠 重复检测",
+        "grp_date": "日期范围筛选",
+        "lbl_quick": "快速选择:",
+        "lbl_from": "从:",
+        "lbl_to": "到:",
+        "preset_today": "本日",
+        "preset_week": "本周",
+        "preset_month": "本月",
+        "preset_last_month": "上月",
+        "preset_all": "全部",
+        "preset_custom": "自定义",
+        "lbl_amount": "💰 总金额: ${amount}",
+        "lbl_visits": "📊 Visits 数量: {count}",
+        "btn_export_clean": "⬇️ 导出 Clean Excel(带金额+上色)",
+        "btn_export_bundle": "⬇️ 导出 Bundle(Clean + Raw 两个 Sheet)",
+        "btn_export_raw": "⬇️ 导出 Raw Excel(原版对照)",
+        "btn_export_dup": "⬇️ 导出 Duplicate Report Excel",
+        "lbl_dup_summary": "问题汇总:",
+        "lbl_dup_detail": "明细(每类问题一个标签页):",
+        "status_no_data": "请上传 .ics 文件",
+        "status_reset": "已重置，请上传 .ics 文件",
+        "status_loaded": "已加载: {name}  |  Raw: {raw} 条  |  Clean: {clean} 条",
+        "dlg_select_ics": "选择 .ics 文件",
+        "dlg_ics_filter": "iCalendar Files (*.ics)",
+        "dlg_save_clean": "保存 Clean Excel",
+        "dlg_save_raw": "保存 Raw Excel",
+        "dlg_save_bundle": "保存 Bundle Excel",
+        "dlg_save_dup": "保存 Duplicate Report",
+        "dlg_xlsx_filter": "Excel Files (*.xlsx)",
+        "msg_parse_failed": "解析失败",
+        "msg_no_data_title": "无数据",
+        "msg_no_data_filt": "请先上传并筛选数据。",
+        "msg_no_data_raw": "请先上传数据。",
+        "msg_no_report_title": "无报告",
+        "msg_no_report": "请先上传数据生成报告。",
+        "msg_saved": "已保存",
+        "col_issue_type": "问题类型",
+        "col_rows": "条数",
+        "sheet_summary": "Summary",
+        "report_missing_uid": "UID 缺失(Raw)",
+        "report_cancelled": "被取消/删除事件(Raw)",
+        "report_multi_version": "同一 UID 的多版本(Raw)",
+        "report_duplicate_event_key": "EVENT_KEY 完全重复(Raw)",
+        "report_same_patient_time": "同病人同时间重复(Clean，疑似)",
+        "report_none": "未检测到明显重复/异常",
+    },
+    "en": {
+        "window_title": "ICS Visits Manager",
+        "lang_label": "Language:",
+        "lang_zh": "中文",
+        "lang_en": "English",
+        "btn_upload": "📤 Upload .ics File",
+        "btn_reset": "🔄 Reset",
+        "chk_cancelled": "Include cancelled events in Clean (not recommended)",
+        "tab_clean": "📋 Clean Data",
+        "tab_raw": "🧾 Raw Original",
+        "tab_dup": "🧠 Duplicates",
+        "grp_date": "Date Range Filter",
+        "lbl_quick": "Quick select:",
+        "lbl_from": "From:",
+        "lbl_to": "To:",
+        "preset_today": "Today",
+        "preset_week": "This week",
+        "preset_month": "This month",
+        "preset_last_month": "Last month",
+        "preset_all": "All",
+        "preset_custom": "Custom",
+        "lbl_amount": "💰 Total: ${amount}",
+        "lbl_visits": "📊 Visits: {count}",
+        "btn_export_clean": "⬇️ Export Clean Excel (amounts + colors)",
+        "btn_export_bundle": "⬇️ Export Bundle (Clean + Raw sheets)",
+        "btn_export_raw": "⬇️ Export Raw Excel (original)",
+        "btn_export_dup": "⬇️ Export Duplicate Report",
+        "lbl_dup_summary": "Issue summary:",
+        "lbl_dup_detail": "Details (one tab per issue type):",
+        "status_no_data": "Please upload an .ics file",
+        "status_reset": "Reset done — please upload an .ics file",
+        "status_loaded": "Loaded: {name}  |  Raw: {raw} rows  |  Clean: {clean} rows",
+        "dlg_select_ics": "Select .ics file",
+        "dlg_ics_filter": "iCalendar Files (*.ics)",
+        "dlg_save_clean": "Save Clean Excel",
+        "dlg_save_raw": "Save Raw Excel",
+        "dlg_save_bundle": "Save Bundle Excel",
+        "dlg_save_dup": "Save Duplicate Report",
+        "dlg_xlsx_filter": "Excel Files (*.xlsx)",
+        "msg_parse_failed": "Parse failed",
+        "msg_no_data_title": "No data",
+        "msg_no_data_filt": "Please upload and filter data first.",
+        "msg_no_data_raw": "Please upload data first.",
+        "msg_no_report_title": "No report",
+        "msg_no_report": "Please upload data first to generate a report.",
+        "msg_saved": "Saved",
+        "col_issue_type": "Issue Type",
+        "col_rows": "Rows",
+        "sheet_summary": "Summary",
+        "report_missing_uid": "Missing UID (Raw)",
+        "report_cancelled": "Cancelled/deleted events (Raw)",
+        "report_multi_version": "Multiple versions, same UID (Raw)",
+        "report_duplicate_event_key": "Exact EVENT_KEY duplicates (Raw)",
+        "report_same_patient_time": "Same patient & time (Clean, suspected)",
+        "report_none": "No obvious duplicates / anomalies detected",
+    },
+}
+
+
+class T:
+    lang = "zh"
+
+    @staticmethod
+    def tr(key: str, **kwargs) -> str:
+        s = TRANSLATIONS.get(T.lang, TRANSLATIONS["zh"]).get(key, key)
+        if kwargs:
+            try:
+                s = s.format(**kwargs)
+            except Exception:
+                pass
+        return s
+
+
+tr = T.tr
+
+
+# 报告类别 → 翻译 key（顺序固定）
+REPORT_KEYS = [
+    "report_missing_uid",
+    "report_cancelled",
+    "report_multi_version",
+    "report_duplicate_event_key",
+    "report_same_patient_time",
+]
+
 
 # =====================
 # 金额 & OASIS 规则
@@ -249,18 +397,21 @@ def export_excel_bundle(df_clean: pd.DataFrame, df_raw: pd.DataFrame, path: Path
 
 
 # =====================
-# 重复检测报告
+# 重复检测报告（用稳定 key，显示时翻译）
 # =====================
 
 def build_duplicate_report(df_raw: pd.DataFrame, df_clean: pd.DataFrame) -> dict:
-    tables: dict[str, pd.DataFrame] = {}
+    tables: dict[str, pd.DataFrame] = {}  # key 为翻译 key
 
     if len(df_raw):
         miss = df_raw[df_raw["UID"].isna() | (df_raw["UID"].astype(str).str.strip() == "")]
-        tables["UID 缺失（Raw）"] = miss.copy()
+        if len(miss):
+            tables["report_missing_uid"] = miss.copy()
 
     if len(df_raw) and "CANCELLED?" in df_raw.columns:
-        tables["被取消/删除事件（Raw）"] = df_raw[df_raw["CANCELLED?"] == "YES"].copy()
+        canc = df_raw[df_raw["CANCELLED?"] == "YES"]
+        if len(canc):
+            tables["report_cancelled"] = canc.copy()
 
     if len(df_raw):
         key_cols = ["UID", "RECURRENCE-ID", "DTSTART (Raw)"]
@@ -270,12 +421,12 @@ def build_duplicate_report(df_raw: pd.DataFrame, df_clean: pd.DataFrame) -> dict
             multi = vc[vc["count"] > 1]
             if len(multi):
                 mv = tmp.merge(multi[key_cols], on=key_cols, how="inner")
-                tables["同一 UID 的多版本（Raw）"] = mv.sort_values(key_cols + ["SEQUENCE"], na_position="last")
+                tables["report_multi_version"] = mv.sort_values(key_cols + ["SEQUENCE"], na_position="last")
 
     if len(df_raw) and "EVENT_KEY" in df_raw.columns:
         dk = df_raw[df_raw.duplicated(subset=["EVENT_KEY"], keep=False)].copy()
         if len(dk):
-            tables["EVENT_KEY 完全重复（Raw）"] = dk
+            tables["report_duplicate_event_key"] = dk
 
     if len(df_clean):
         tmpc = df_clean.copy()
@@ -285,14 +436,24 @@ def build_duplicate_report(df_raw: pd.DataFrame, df_clean: pd.DataFrame) -> dict
             ct = tmpc.groupby(base, dropna=False).size().reset_index(name="count")
             ct = ct[ct["count"] > 1]
             if len(ct):
-                tables["同病人同时间重复（Clean，疑似）"] = (
+                tables["report_same_patient_time"] = (
                     tmpc.merge(ct[base], on=base, how="inner").sort_values(base)
                 )
 
-    rows = [{"Issue Type": k, "Rows": int(len(v))} for k, v in tables.items()]
-    if not rows:
-        rows = [{"Issue Type": "未检测到明显重复/异常", "Rows": 0}]
-    return {"summary": pd.DataFrame(rows), "tables": tables}
+    return {"tables": tables}
+
+
+def report_summary_df(report: dict) -> pd.DataFrame:
+    """根据当前语言生成汇总表"""
+    tables = report["tables"]
+    issue_col = tr("col_issue_type")
+    rows_col = tr("col_rows")
+    if not tables:
+        return pd.DataFrame([{issue_col: tr("report_none"), rows_col: 0}])
+    return pd.DataFrame([
+        {issue_col: tr(k), rows_col: int(len(v))} for k, v in tables.items()
+    ])
+
 
 def export_dup_report_excel(report: dict, path: Path):
     def safe(name: str) -> str:
@@ -300,10 +461,12 @@ def export_dup_report_excel(report: dict, path: Path):
             name = name.replace(b, "_")
         return name[:31]
 
+    summary = report_summary_df(report)
+
     with pd.ExcelWriter(path, engine="openpyxl") as writer:
-        report["summary"].to_excel(writer, sheet_name="Summary", index=False)
+        summary.to_excel(writer, sheet_name=tr("sheet_summary")[:31], index=False)
         for k, df_ in report["tables"].items():
-            sn = safe(k)
+            sn = safe(tr(k))
             if df_ is None or df_.empty:
                 pd.DataFrame([{"info": "no rows"}]).to_excel(writer, sheet_name=sn, index=False)
             else:
@@ -367,7 +530,13 @@ def fill_table(table: QTableWidget, df: pd.DataFrame, oasis_col: str | None = No
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
-        self.setWindowTitle("ICS Visits 管理与金额统计")
+
+        # 加载保存的语言
+        self.settings = QSettings("nurseapp", "ics-visits-manager")
+        T.lang = self.settings.value("language", "zh", type=str)
+        if T.lang not in TRANSLATIONS:
+            T.lang = "zh"
+
         self.resize(1400, 900)
 
         self.df_raw      = pd.DataFrame()
@@ -375,8 +544,10 @@ class MainWindow(QMainWindow):
         self.df_filt     = pd.DataFrame()
         self.df_filt_raw = pd.DataFrame()
         self._report: dict | None = None
+        self._loaded_filename: str = ""
 
         self._build_ui()
+        self._retranslate_ui()
 
     # ------------------------------------------------------------------ build
 
@@ -389,21 +560,30 @@ class MainWindow(QMainWindow):
 
         # toolbar
         bar = QHBoxLayout()
-        self.btn_upload = QPushButton("📤 上传 .ics 文件")
+        self.btn_upload = QPushButton()
         self.btn_upload.setFixedHeight(34)
         self.btn_upload.clicked.connect(self.upload_ics)
 
-        self.btn_reset = QPushButton("🔄 重置")
+        self.btn_reset = QPushButton()
         self.btn_reset.setFixedHeight(34)
         self.btn_reset.clicked.connect(self.reset_data)
 
-        self.chk_cancelled = QCheckBox("包含已取消事件到 Clean（一般不建议）")
+        self.chk_cancelled = QCheckBox()
+
+        self.lbl_lang = QLabel()
+        self.lang_combo = QComboBox()
+        self.lang_combo.addItem("中文", "zh")
+        self.lang_combo.addItem("English", "en")
+        self.lang_combo.setCurrentIndex(0 if T.lang == "zh" else 1)
+        self.lang_combo.currentIndexChanged.connect(self._on_lang_changed)
 
         bar.addWidget(self.btn_upload)
         bar.addWidget(self.btn_reset)
         bar.addSpacing(16)
         bar.addWidget(self.chk_cancelled)
         bar.addStretch()
+        bar.addWidget(self.lbl_lang)
+        bar.addWidget(self.lang_combo)
         layout.addLayout(bar)
 
         # tabs
@@ -413,46 +593,49 @@ class MainWindow(QMainWindow):
         self._build_raw_tab()
         self._build_dup_tab()
 
-        self.statusBar().showMessage("请上传 .ics 文件")
-
     def _build_clean_tab(self):
         w = QWidget()
         v = QVBoxLayout(w)
         v.setSpacing(6)
 
         # date filter
-        grp = QGroupBox("日期范围筛选")
-        h = QHBoxLayout(grp)
+        self.grp_date = QGroupBox()
+        h = QHBoxLayout(self.grp_date)
         h.setSpacing(8)
 
-        h.addWidget(QLabel("快速选择:"))
+        self.lbl_quick = QLabel()
+        h.addWidget(self.lbl_quick)
         self.preset_combo = QComboBox()
-        self.preset_combo.addItems(["本日", "本周", "本月", "上月", "全部", "自定义"])
+        # 用 6 个空 item 占位，retranslate 时填充
+        for _ in range(6):
+            self.preset_combo.addItem("")
         self.preset_combo.setCurrentIndex(1)
         self.preset_combo.currentIndexChanged.connect(self._on_preset_changed)
         h.addWidget(self.preset_combo)
         h.addSpacing(12)
 
-        h.addWidget(QLabel("从:"))
+        self.lbl_from = QLabel()
+        h.addWidget(self.lbl_from)
         self.date_start = QDateEdit(QDate.currentDate())
         self.date_start.setCalendarPopup(True)
         self.date_start.setEnabled(False)
         self.date_start.dateChanged.connect(self._apply_filter)
         h.addWidget(self.date_start)
 
-        h.addWidget(QLabel("到:"))
+        self.lbl_to = QLabel()
+        h.addWidget(self.lbl_to)
         self.date_end = QDateEdit(QDate.currentDate())
         self.date_end.setCalendarPopup(True)
         self.date_end.setEnabled(False)
         self.date_end.dateChanged.connect(self._apply_filter)
         h.addWidget(self.date_end)
         h.addStretch()
-        v.addWidget(grp)
+        v.addWidget(self.grp_date)
 
         # metrics
         mh = QHBoxLayout()
-        self.lbl_amount = QLabel("💰 总金额: $0")
-        self.lbl_visits = QLabel("📊 Visits 数量: 0")
+        self.lbl_amount = QLabel()
+        self.lbl_visits = QLabel()
         bold = QFont()
         bold.setPointSize(13)
         bold.setBold(True)
@@ -470,16 +653,17 @@ class MainWindow(QMainWindow):
 
         # export
         eh = QHBoxLayout()
-        btn_c = QPushButton("⬇️ 导出 Clean Excel（带金额+上色）")
-        btn_c.clicked.connect(self.export_clean)
-        btn_b = QPushButton("⬇️ 导出 Bundle（Clean + Raw 两个 Sheet）")
-        btn_b.clicked.connect(self.export_bundle)
-        eh.addWidget(btn_c)
-        eh.addWidget(btn_b)
+        self.btn_export_clean = QPushButton()
+        self.btn_export_clean.clicked.connect(self.export_clean)
+        self.btn_export_bundle = QPushButton()
+        self.btn_export_bundle.clicked.connect(self.export_bundle)
+        eh.addWidget(self.btn_export_clean)
+        eh.addWidget(self.btn_export_bundle)
         eh.addStretch()
         v.addLayout(eh)
 
-        self.tabs.addTab(w, "📋 Clean 数据")
+        self.tab_clean_widget = w
+        self.tabs.addTab(w, "")
 
     def _build_raw_tab(self):
         w = QWidget()
@@ -489,42 +673,128 @@ class MainWindow(QMainWindow):
         v.addWidget(self.raw_table)
 
         eh = QHBoxLayout()
-        btn_r = QPushButton("⬇️ 导出 Raw Excel（原版对照）")
-        btn_r.clicked.connect(self.export_raw)
-        eh.addWidget(btn_r)
+        self.btn_export_raw = QPushButton()
+        self.btn_export_raw.clicked.connect(self.export_raw)
+        eh.addWidget(self.btn_export_raw)
         eh.addStretch()
         v.addLayout(eh)
 
-        self.tabs.addTab(w, "🧾 Raw 原版")
+        self.tab_raw_widget = w
+        self.tabs.addTab(w, "")
 
     def _build_dup_tab(self):
         w = QWidget()
         v = QVBoxLayout(w)
         v.setSpacing(6)
 
-        v.addWidget(QLabel("问题汇总:"))
+        self.lbl_dup_summary = QLabel()
+        v.addWidget(self.lbl_dup_summary)
         self.dup_summary = make_table()
         self.dup_summary.setMaximumHeight(120)
         v.addWidget(self.dup_summary)
 
-        v.addWidget(QLabel("明细（每类问题一个标签页）:"))
+        self.lbl_dup_detail = QLabel()
+        v.addWidget(self.lbl_dup_detail)
         self.dup_detail_tabs = QTabWidget()
         v.addWidget(self.dup_detail_tabs)
 
         eh = QHBoxLayout()
-        btn_d = QPushButton("⬇️ 导出 Duplicate Report Excel")
-        btn_d.clicked.connect(self.export_dup)
-        eh.addWidget(btn_d)
+        self.btn_export_dup = QPushButton()
+        self.btn_export_dup.clicked.connect(self.export_dup)
+        eh.addWidget(self.btn_export_dup)
         eh.addStretch()
         v.addLayout(eh)
 
-        self.tabs.addTab(w, "🧠 重复检测")
+        self.tab_dup_widget = w
+        self.tabs.addTab(w, "")
+
+    # ------------------------------------------------------------------ i18n
+
+    def _retranslate_ui(self):
+        self.setWindowTitle(tr("window_title"))
+
+        self.btn_upload.setText(tr("btn_upload"))
+        self.btn_reset.setText(tr("btn_reset"))
+        self.chk_cancelled.setText(tr("chk_cancelled"))
+        self.lbl_lang.setText(tr("lang_label"))
+
+        self.tabs.setTabText(0, tr("tab_clean"))
+        self.tabs.setTabText(1, tr("tab_raw"))
+        self.tabs.setTabText(2, tr("tab_dup"))
+
+        # date filter
+        self.grp_date.setTitle(tr("grp_date"))
+        self.lbl_quick.setText(tr("lbl_quick"))
+        self.lbl_from.setText(tr("lbl_from"))
+        self.lbl_to.setText(tr("lbl_to"))
+
+        # 不触发 currentIndexChanged
+        self.preset_combo.blockSignals(True)
+        preset_keys = ["preset_today", "preset_week", "preset_month",
+                       "preset_last_month", "preset_all", "preset_custom"]
+        for i, k in enumerate(preset_keys):
+            self.preset_combo.setItemText(i, tr(k))
+        self.preset_combo.blockSignals(False)
+
+        # 导出按钮
+        self.btn_export_clean.setText(tr("btn_export_clean"))
+        self.btn_export_bundle.setText(tr("btn_export_bundle"))
+        self.btn_export_raw.setText(tr("btn_export_raw"))
+        self.btn_export_dup.setText(tr("btn_export_dup"))
+
+        # 重复检测页
+        self.lbl_dup_summary.setText(tr("lbl_dup_summary"))
+        self.lbl_dup_detail.setText(tr("lbl_dup_detail"))
+
+        # 数据相关：金额、状态栏、重复表格
+        if self.df_filt is not None and not self.df_filt.empty:
+            total = int(self.df_filt["Amount"].sum()) if "Amount" in self.df_filt.columns else 0
+            self.lbl_amount.setText(tr("lbl_amount", amount=f"{total:,}"))
+            self.lbl_visits.setText(tr("lbl_visits", count=len(self.df_filt)))
+        else:
+            self.lbl_amount.setText(tr("lbl_amount", amount="0"))
+            self.lbl_visits.setText(tr("lbl_visits", count=0))
+
+        # 状态栏
+        if self._loaded_filename:
+            self.statusBar().showMessage(tr(
+                "status_loaded",
+                name=self._loaded_filename,
+                raw=len(self.df_raw),
+                clean=len(self.df_clean),
+            ))
+        else:
+            self.statusBar().showMessage(tr("status_no_data"))
+
+        # 重复检测的汇总表 + 子标签
+        if self._report is not None:
+            fill_table(self.dup_summary, report_summary_df(self._report))
+            self._rebuild_dup_detail_tabs()
+
+    def _rebuild_dup_detail_tabs(self):
+        self.dup_detail_tabs.clear()
+        if self._report is None:
+            return
+        for k, tdf in self._report["tables"].items():
+            t = make_table()
+            fill_table(t, tdf)
+            label = tr(k)
+            label = label[:24] + ("…" if len(label) > 24 else "")
+            self.dup_detail_tabs.addTab(t, label)
+
+    def _on_lang_changed(self, idx: int):
+        new_lang = self.lang_combo.itemData(idx) or "zh"
+        if new_lang == T.lang:
+            return
+        T.lang = new_lang
+        self.settings.setValue("language", new_lang)
+        self._retranslate_ui()
 
     # ------------------------------------------------------------------ slots
 
     def upload_ics(self):
         path, _ = QFileDialog.getOpenFileName(
-            self, "选择 .ics 文件", "", "iCalendar Files (*.ics)"
+            self, tr("dlg_select_ics"), "", tr("dlg_ics_filter")
         )
         if not path:
             return
@@ -535,24 +805,27 @@ class MainWindow(QMainWindow):
                 data, include_cancelled_in_clean=self.chk_cancelled.isChecked()
             )
         except Exception as e:
-            QMessageBox.critical(self, "解析失败", str(e))
+            QMessageBox.critical(self, tr("msg_parse_failed"), str(e))
             return
-        self._update_all(Path(path).name)
+        self._loaded_filename = Path(path).name
+        self._update_all()
 
     def reset_data(self):
         self.df_raw = self.df_clean = self.df_filt = self.df_filt_raw = pd.DataFrame()
         self._report = None
+        self._loaded_filename = ""
         for t in (self.clean_table, self.raw_table, self.dup_summary):
             t.clearContents()
             t.setRowCount(0)
             t.setColumnCount(0)
         self.dup_detail_tabs.clear()
-        self.lbl_amount.setText("💰 总金额: $0")
-        self.lbl_visits.setText("📊 Visits 数量: 0")
-        self.statusBar().showMessage("已重置，请上传 .ics 文件")
+        self.lbl_amount.setText(tr("lbl_amount", amount="0"))
+        self.lbl_visits.setText(tr("lbl_visits", count=0))
+        self.statusBar().showMessage(tr("status_reset"))
 
     def _on_preset_changed(self):
-        is_custom = self.preset_combo.currentText() == "自定义"
+        # 用 index 5 = custom，避免依赖语言
+        is_custom = self.preset_combo.currentIndex() == 5
         self.date_start.setEnabled(is_custom)
         self.date_end.setEnabled(is_custom)
         self._apply_filter()
@@ -569,23 +842,23 @@ class MainWindow(QMainWindow):
 
         today = date.today()
         min_d, max_d = valid.min(), valid.max()
-        preset = self.preset_combo.currentText()
+        idx = self.preset_combo.currentIndex()
 
-        if preset == "本日":
+        if idx == 0:        # today
             start = end = today
-        elif preset == "本周":
+        elif idx == 1:      # this week
             start = today - timedelta(days=today.weekday())
             end = today
-        elif preset == "本月":
+        elif idx == 2:      # this month
             start = today.replace(day=1)
             end = today
-        elif preset == "上月":
+        elif idx == 3:      # last month
             first_this = today.replace(day=1)
             end = first_this - timedelta(days=1)
             start = end.replace(day=1)
-        elif preset == "全部":
+        elif idx == 4:      # all
             start, end = min_d, max_d
-        else:
+        else:               # custom
             qs = self.date_start.date()
             qe = self.date_end.date()
             start = date(qs.year(), qs.month(), qs.day())
@@ -603,14 +876,14 @@ class MainWindow(QMainWindow):
             self.df_filt_raw = raw
 
         total = int(self.df_filt["Amount"].sum()) if "Amount" in self.df_filt.columns else 0
-        self.lbl_amount.setText(f"💰 总金额: ${total:,}")
-        self.lbl_visits.setText(f"📊 Visits 数量: {len(self.df_filt)}")
+        self.lbl_amount.setText(tr("lbl_amount", amount=f"{total:,}"))
+        self.lbl_visits.setText(tr("lbl_visits", count=len(self.df_filt)))
 
         cols = [c for c in CLEAN_COLS if c in self.df_filt.columns]
         sorted_filt = self.df_filt.sort_values(["Date", "Time In"], na_position="last")
         fill_table(self.clean_table, sorted_filt[cols], oasis_col="OASIS Required?")
 
-    def _update_all(self, filename: str = ""):
+    def _update_all(self):
         fill_table(self.raw_table, self.df_raw)
 
         if not self.df_clean.empty:
@@ -629,57 +902,55 @@ class MainWindow(QMainWindow):
 
         if not self.df_raw.empty or not self.df_clean.empty:
             self._report = build_duplicate_report(self.df_raw, self.df_clean)
-            fill_table(self.dup_summary, self._report["summary"])
-            self.dup_detail_tabs.clear()
-            for k, tdf in self._report["tables"].items():
-                t = make_table()
-                fill_table(t, tdf)
-                label = k[:20] + ("…" if len(k) > 20 else "")
-                self.dup_detail_tabs.addTab(t, label)
+            fill_table(self.dup_summary, report_summary_df(self._report))
+            self._rebuild_dup_detail_tabs()
 
-        self.statusBar().showMessage(
-            f"已加载: {filename}  |  Raw: {len(self.df_raw)} 条  |  Clean: {len(self.df_clean)} 条"
-        )
+        self.statusBar().showMessage(tr(
+            "status_loaded",
+            name=self._loaded_filename,
+            raw=len(self.df_raw),
+            clean=len(self.df_clean),
+        ))
 
     # ------------------------------------------------------------------ export
 
     def _save_path(self, title: str, default: str) -> Path | None:
-        p, _ = QFileDialog.getSaveFileName(self, title, default, "Excel Files (*.xlsx)")
+        p, _ = QFileDialog.getSaveFileName(self, title, default, tr("dlg_xlsx_filter"))
         return Path(p) if p else None
 
     def export_clean(self):
         if self.df_filt.empty:
-            return QMessageBox.warning(self, "无数据", "请先上传并筛选数据。")
-        p = self._save_path("保存 Clean Excel", "HH_Visits_With_Amount.xlsx")
+            return QMessageBox.warning(self, tr("msg_no_data_title"), tr("msg_no_data_filt"))
+        p = self._save_path(tr("dlg_save_clean"), "HH_Visits_With_Amount.xlsx")
         if p:
             export_excel_clean(self.df_filt, p)
-            QMessageBox.information(self, "已保存", str(p))
+            QMessageBox.information(self, tr("msg_saved"), str(p))
 
     def export_raw(self):
         if self.df_raw.empty:
-            return QMessageBox.warning(self, "无数据", "请先上传数据。")
-        p = self._save_path("保存 Raw Excel", "HH_Visits_Raw.xlsx")
+            return QMessageBox.warning(self, tr("msg_no_data_title"), tr("msg_no_data_raw"))
+        p = self._save_path(tr("dlg_save_raw"), "HH_Visits_Raw.xlsx")
         if p:
             raw = self.df_filt_raw if not self.df_filt_raw.empty else self.df_raw
             export_excel_raw(raw, p)
-            QMessageBox.information(self, "已保存", str(p))
+            QMessageBox.information(self, tr("msg_saved"), str(p))
 
     def export_bundle(self):
         if self.df_filt.empty:
-            return QMessageBox.warning(self, "无数据", "请先上传并筛选数据。")
-        p = self._save_path("保存 Bundle Excel", "HH_Visits_Bundle.xlsx")
+            return QMessageBox.warning(self, tr("msg_no_data_title"), tr("msg_no_data_filt"))
+        p = self._save_path(tr("dlg_save_bundle"), "HH_Visits_Bundle.xlsx")
         if p:
             raw = self.df_filt_raw if not self.df_filt_raw.empty else self.df_raw
             export_excel_bundle(self.df_filt, raw, p)
-            QMessageBox.information(self, "已保存", str(p))
+            QMessageBox.information(self, tr("msg_saved"), str(p))
 
     def export_dup(self):
         if self._report is None:
-            return QMessageBox.warning(self, "无报告", "请先上传数据生成报告。")
-        p = self._save_path("保存 Duplicate Report", "Duplicate_Report.xlsx")
+            return QMessageBox.warning(self, tr("msg_no_report_title"), tr("msg_no_report"))
+        p = self._save_path(tr("dlg_save_dup"), "Duplicate_Report.xlsx")
         if p:
             export_dup_report_excel(self._report, p)
-            QMessageBox.information(self, "已保存", str(p))
+            QMessageBox.information(self, tr("msg_saved"), str(p))
 
 
 def main():
