@@ -25,7 +25,7 @@ A desktop tool for parsing nurse home-visit `.ics` calendar files, computing vis
 ## Features
 
 - **Parse `.ics` files** — extract every `VEVENT` (date, time, patient, visit type, location)
-- **Auto-pricing** — apply per-type rates (SOC $100, DC $60, RECERT/ROC $70, IV/FU $65)
+- **Auto-pricing** — apply per-type rates (user-customizable, default $x per type)
 - **OASIS detection** — auto-flag SOC / DC / RECERT / ROC visits as OASIS-required
 - **Duplicate & cancellation report** — same UID multiple versions, `STATUS:CANCELLED` events, missing UIDs, same-patient-same-time clashes
 - **Date range filtering** — today / this week / this month / last month / all / custom range
