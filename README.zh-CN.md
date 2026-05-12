@@ -122,12 +122,14 @@ xattr -cr ~/Desktop/"ICS Visits 管理.app"
 
 | 类型     | 金额  | OASIS 是否必需 |
 |----------|-------|----------------|
-| SOC      | $100  | YES            |
-| DC       | $60   | YES            |
-| RECERT   | $70   | YES            |
-| ROC      | $70   | YES            |
-| IV       | $65   | NO             |
-| FU       | $65   | NO             |
+| SOC      | $x    | YES            |
+| DC       | $x    | YES            |
+| RECERT   | $x    | YES            |
+| ROC      | $x    | YES            |
+| IV       | $x    | NO             |
+| FU       | $x    | NO             |
+
+金额可以由每位用户通过应用内的 ⚙️ 访视类型设置自行定义。每位用户可以自己配置代号、匹配关键词、价格和 OASIS 标记，设置会本地保存，下次打开依然生效。
 
 访视类型从日历事件的 summary 解析，格式为 `病人名 - 访视类型`。`Follow Up` / `F/U` / `FU` 这类变体会统一归到 `FU`。
 

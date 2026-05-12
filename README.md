@@ -121,12 +121,14 @@ After running it, double-click works normally.
 
 | Type    | Amount | OASIS required |
 |---------|--------|----------------|
-| SOC     | $100   | YES            |
-| DC      | $60    | YES            |
-| RECERT  | $70    | YES            |
-| ROC     | $70    | YES            |
-| IV      | $65    | NO             |
-| FU      | $65    | NO             |
+| SOC     | $x     | YES            |
+| DC      | $x     | YES            |
+| RECERT  | $x     | YES            |
+| ROC     | $x     | YES            |
+| IV      | $x     | NO             |
+| FU      | $x     | NO             |
+
+Amounts are **fully customizable** per user via the in-app ⚙️ Visit Types editor. Each user can define their own codes, matching keywords, prices, and OASIS flags; settings are saved locally and persist across sessions.
 
 The visit type is parsed from the calendar event summary in `Patient Name - Visit Type` format. Variants like `Follow Up`, `F/U`, `FU` all normalize to `FU`.
 
