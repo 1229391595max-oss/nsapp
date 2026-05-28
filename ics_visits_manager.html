@@ -1,0 +1,1924 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ICS Visits Manager</title>
+  <style>
+    :root {
+      --bg: #f6f7f9;
+      --panel: #ffffff;
+      --ink: #18202a;
+      --muted: #667085;
+      --line: #d7dde5;
+      --accent: #176c9f;
+      --accent-strong: #0f5279;
+      --success-bg: #dcf6df;
+      --danger-bg: #ffe0e0;
+      --warning-bg: #fff2c9;
+      --shadow: 0 10px 26px rgba(24, 32, 42, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, "PingFang SC", "Microsoft YaHei", sans-serif;
+      font-size: 14px;
+      line-height: 1.45;
+    }
+
+    header {
+      background: #15212d;
+      color: white;
+      padding: 18px 22px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: 0;
+    }
+
+    .subtitle {
+      margin-top: 3px;
+      color: #c9d4df;
+      font-size: 13px;
+    }
+
+    main {
+      padding: 18px;
+      max-width: 1500px;
+      margin: 0 auto;
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+      padding: 14px;
+      margin-bottom: 14px;
+    }
+
+    .toolbar,
+    .filters,
+    .stats,
+    .exportbar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .toolbar {
+      justify-content: space-between;
+    }
+
+    .left-tools,
+    .right-tools {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    button,
+    .file-button,
+    select,
+    input[type="date"],
+    input[type="text"],
+    input[type="number"] {
+      border: 1px solid var(--line);
+      background: white;
+      color: var(--ink);
+      border-radius: 6px;
+      min-height: 34px;
+      padding: 7px 10px;
+      font: inherit;
+    }
+
+    button,
+    .file-button {
+      cursor: pointer;
+      user-select: none;
+      font-weight: 600;
+    }
+
+    button.primary,
+    .file-button.primary {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: white;
+    }
+
+    button.primary:hover,
+    .file-button.primary:hover {
+      background: var(--accent-strong);
+    }
+
+    button:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+
+    label.inline {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--muted);
+      white-space: nowrap;
+    }
+
+    input[type="checkbox"] {
+      width: 16px;
+      height: 16px;
+      margin: 0;
+    }
+
+    .notice {
+      background: #edf6fb;
+      border: 1px solid #c8e2f0;
+      color: #254b63;
+      border-radius: 8px;
+      padding: 10px 12px;
+      margin-bottom: 14px;
+    }
+
+    .status {
+      color: var(--muted);
+      margin-top: 8px;
+      min-height: 20px;
+    }
+
+    .stat {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 10px 12px;
+      background: #fafbfc;
+      font-weight: 700;
+      min-width: 150px;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 4px;
+      border-bottom: 1px solid var(--line);
+      margin-bottom: 12px;
+      overflow-x: auto;
+    }
+
+    .tab-button {
+      border: 0;
+      border-bottom: 3px solid transparent;
+      background: transparent;
+      border-radius: 0;
+      padding: 10px 14px;
+      min-height: 40px;
+      color: var(--muted);
+    }
+
+    .tab-button.active {
+      color: var(--accent-strong);
+      border-bottom-color: var(--accent);
+    }
+
+    .tab-panel {
+      display: none;
+    }
+
+    .tab-panel.active {
+      display: block;
+    }
+
+    .table-wrap {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      overflow: auto;
+      background: white;
+      max-height: 62vh;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 900px;
+    }
+
+    th,
+    td {
+      border-bottom: 1px solid #edf0f3;
+      border-right: 1px solid #edf0f3;
+      padding: 7px 8px;
+      text-align: left;
+      vertical-align: top;
+      white-space: nowrap;
+      max-width: 360px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    th {
+      position: sticky;
+      top: 0;
+      z-index: 1;
+      background: #eef2f6;
+      font-weight: 700;
+      color: #2b3440;
+    }
+
+    tr:hover td {
+      background: #f7fafc;
+    }
+
+    .cell-yes {
+      background: var(--success-bg);
+      font-weight: 700;
+    }
+
+    .cell-no {
+      background: var(--danger-bg);
+      font-weight: 700;
+    }
+
+    .small {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .empty {
+      color: var(--muted);
+      padding: 28px;
+      text-align: center;
+    }
+
+    .dup-layout {
+      display: grid;
+      grid-template-columns: minmax(260px, 360px) 1fr;
+      gap: 14px;
+    }
+
+    .issue-list {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      overflow: hidden;
+      background: white;
+    }
+
+    .issue-item {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 10px 12px;
+      border-bottom: 1px solid #edf0f3;
+      cursor: pointer;
+    }
+
+    .issue-item:last-child {
+      border-bottom: 0;
+    }
+
+    .issue-item.active {
+      background: #e8f3f9;
+      color: var(--accent-strong);
+      font-weight: 700;
+    }
+
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      background: rgba(15, 23, 42, 0.48);
+      padding: 18px;
+      z-index: 10;
+    }
+
+    .modal-backdrop.active {
+      display: flex;
+    }
+
+    .modal {
+      width: min(980px, 96vw);
+      max-height: 90vh;
+      overflow: auto;
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 20px 80px rgba(0, 0, 0, 0.28);
+      border: 1px solid var(--line);
+    }
+
+    .modal-header,
+    .modal-footer {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .modal-footer {
+      border-top: 1px solid var(--line);
+      border-bottom: 0;
+      justify-content: flex-end;
+    }
+
+    .modal-body {
+      padding: 14px 16px;
+    }
+
+    .modal h2 {
+      margin: 0;
+      font-size: 18px;
+    }
+
+    .rules-table input[type="text"],
+    .rules-table input[type="number"] {
+      width: 100%;
+      min-width: 120px;
+    }
+
+    .rules-table td,
+    .rules-table th {
+      white-space: normal;
+    }
+
+    .rules-table {
+      min-width: 760px;
+    }
+
+    .rules-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin: 12px 0;
+    }
+
+    .rules-guide {
+      background: #f7fafc;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 12px;
+      margin-bottom: 12px;
+      color: #394454;
+    }
+
+    .rules-guide strong {
+      display: block;
+      margin-bottom: 6px;
+      color: var(--ink);
+    }
+
+    .rules-guide code {
+      background: #eef2f6;
+      border: 1px solid #d8e0e8;
+      border-radius: 5px;
+      padding: 2px 5px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 12px;
+    }
+
+    .danger-text {
+      color: #b42318;
+      font-weight: 700;
+    }
+
+    @media (max-width: 760px) {
+      header {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .toolbar {
+        align-items: stretch;
+      }
+
+      .left-tools,
+      .right-tools,
+      .filters,
+      .exportbar {
+        width: 100%;
+      }
+
+      button,
+      .file-button,
+      select,
+      input[type="date"] {
+        width: 100%;
+      }
+
+      .dup-layout {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div>
+      <h1 data-i18n="app_title">ICS Visits Manager</h1>
+      <div class="subtitle" data-i18n="app_subtitle">Local, offline .ics visit parser and Excel exporter</div>
+    </div>
+    <div class="right-tools">
+      <label class="inline">
+        <span data-i18n="language">Language</span>
+        <select id="languageSelect" aria-label="Language">
+          <option value="en">English</option>
+          <option value="zh">中文</option>
+          <option value="es">Español</option>
+        </select>
+      </label>
+    </div>
+  </header>
+
+  <main>
+    <div class="notice" data-i18n="privacy_note">
+      This file runs fully offline in your browser. It does not upload, transmit, or store patient data on any server.
+    </div>
+
+    <section class="panel">
+      <div class="toolbar">
+        <div class="left-tools">
+          <label class="file-button primary" for="icsInput" data-i18n="upload_ics">Upload .ics File</label>
+          <input id="icsInput" type="file" accept=".ics,text/calendar" hidden>
+          <button id="settingsButton" type="button" data-i18n="visit_type_settings">Visit Types</button>
+          <button id="resetButton" type="button" data-i18n="reset">Reset</button>
+        </div>
+        <div class="right-tools">
+          <label class="inline">
+            <input id="includeCancelled" type="checkbox">
+            <span data-i18n="include_cancelled">Include cancelled events in Clean</span>
+          </label>
+        </div>
+      </div>
+      <div id="statusLine" class="status" data-i18n="status_ready">Please upload an .ics file.</div>
+    </section>
+
+    <section class="panel">
+      <div class="filters">
+        <label class="inline">
+          <span data-i18n="quick_select">Quick select</span>
+          <select id="presetSelect">
+            <option value="today" data-i18n="preset_today">Today</option>
+            <option value="week" data-i18n="preset_week">This week</option>
+            <option value="month" data-i18n="preset_month">This month</option>
+            <option value="lastMonth" data-i18n="preset_last_month">Last month</option>
+            <option value="all" selected data-i18n="preset_all">All</option>
+            <option value="custom" data-i18n="preset_custom">Custom</option>
+          </select>
+        </label>
+        <label class="inline">
+          <span data-i18n="from">From</span>
+          <input id="dateFrom" type="date">
+        </label>
+        <label class="inline">
+          <span data-i18n="to">To</span>
+          <input id="dateTo" type="date">
+        </label>
+      </div>
+      <div class="stats" style="margin-top: 12px;">
+        <div id="amountStat" class="stat">Total: $0</div>
+        <div id="visitStat" class="stat">Visits: 0</div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="exportbar">
+        <button id="exportClean" type="button" data-i18n="export_clean">Export Clean Excel</button>
+        <button id="exportBundle" type="button" data-i18n="export_bundle">Export Bundle</button>
+        <button id="exportRaw" type="button" data-i18n="export_raw">Export Raw Excel</button>
+        <button id="exportDup" type="button" data-i18n="export_dup">Export Duplicate Report</button>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="tabs" role="tablist">
+        <button class="tab-button active" type="button" data-tab="clean" data-i18n="tab_clean">Clean Data</button>
+        <button class="tab-button" type="button" data-tab="raw" data-i18n="tab_raw">Raw Original</button>
+        <button class="tab-button" type="button" data-tab="dup" data-i18n="tab_dup">Duplicates</button>
+      </div>
+
+      <div id="cleanPanel" class="tab-panel active">
+        <div id="cleanTableInfo" class="small"></div>
+        <div id="cleanTable" class="table-wrap"></div>
+      </div>
+
+      <div id="rawPanel" class="tab-panel">
+        <div id="rawTableInfo" class="small"></div>
+        <div id="rawTable" class="table-wrap"></div>
+      </div>
+
+      <div id="dupPanel" class="tab-panel">
+        <div class="dup-layout">
+          <div>
+            <h3 data-i18n="issue_summary">Issue summary</h3>
+            <div id="issueList" class="issue-list"></div>
+          </div>
+          <div>
+            <h3 id="issueTitle" data-i18n="issue_details">Issue details</h3>
+            <div id="dupTableInfo" class="small"></div>
+            <div id="dupTable" class="table-wrap"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div id="rulesModal" class="modal-backdrop" role="dialog" aria-modal="true">
+    <div class="modal">
+      <div class="modal-header">
+        <div>
+          <h2 data-i18n="rules_title">Visit Types & Prices</h2>
+          <div class="small" data-i18n="rules_help">Keywords are matched top-down when importing calendar events.</div>
+        </div>
+        <button id="closeRules" type="button" aria-label="Close">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="rules-guide">
+          <strong data-i18n="rules_guide_title">How keyword matching works</strong>
+          <div data-i18n="rules_guide_body">Put different descriptions of the same visit type in one row, separated by English commas. Example: SOC, Start of Care, Initial Visit. The app checks rows from top to bottom and uses the first match.</div>
+        </div>
+        <div class="rules-actions">
+          <button id="addRule" type="button" data-i18n="add_rule">Add</button>
+          <button id="deleteRule" type="button" data-i18n="delete_rule">Delete selected</button>
+          <button id="moveRuleUp" type="button" data-i18n="move_up">Move up</button>
+          <button id="moveRuleDown" type="button" data-i18n="move_down">Move down</button>
+          <button id="resetRules" type="button" data-i18n="reset_defaults">Reset defaults</button>
+          <button id="exportSettings" type="button" data-i18n="export_settings">Export settings</button>
+          <button id="importSettings" type="button" data-i18n="import_settings">Import settings</button>
+          <input id="importSettingsInput" type="file" accept=".json,application/json" hidden>
+        </div>
+        <div class="table-wrap" style="max-height: 420px;">
+          <table class="rules-table">
+            <thead>
+              <tr>
+                <th style="width: 110px;" data-i18n="rule_code">Code</th>
+                <th data-i18n="rule_keywords">Match keywords</th>
+                <th style="width: 120px;" data-i18n="rule_amount">Amount ($)</th>
+                <th style="width: 140px;" data-i18n="rule_oasis">OASIS required</th>
+              </tr>
+            </thead>
+            <tbody id="rulesBody"></tbody>
+          </table>
+        </div>
+        <div id="rulesError" class="danger-text" style="margin-top: 10px;"></div>
+      </div>
+      <div class="modal-footer">
+        <button id="cancelRules" type="button" data-i18n="cancel">Cancel</button>
+        <button id="saveRules" type="button" class="primary" data-i18n="save">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    "use strict";
+
+    const I18N = {
+      en: {
+        app_title: "ICS Visits Manager",
+        app_subtitle: "Local, offline .ics visit parser and Excel exporter",
+        privacy_note: "This file runs fully offline in your browser. It does not upload, transmit, or store patient data on any server.",
+        language: "Language",
+        upload_ics: "Upload .ics File",
+        visit_type_settings: "Visit Types",
+        reset: "Reset",
+        include_cancelled: "Include cancelled events in Clean",
+        status_ready: "Please upload an .ics file.",
+        status_reset: "Reset done. Please upload an .ics file.",
+        status_loaded: "Loaded: {name} | Raw: {raw} rows | Clean: {clean} rows",
+        quick_select: "Quick select",
+        preset_today: "Today",
+        preset_week: "This week",
+        preset_month: "This month",
+        preset_last_month: "Last month",
+        preset_all: "All",
+        preset_custom: "Custom",
+        from: "From",
+        to: "To",
+        total_amount: "Total: ${amount}",
+        visit_count: "Visits: {count}",
+        export_clean: "Export Clean Excel",
+        export_bundle: "Export Bundle",
+        export_raw: "Export Raw Excel",
+        export_dup: "Export Duplicate Report",
+        tab_clean: "Clean Data",
+        tab_raw: "Raw Original",
+        tab_dup: "Duplicates",
+        issue_summary: "Issue summary",
+        issue_details: "Issue details",
+        no_data: "No data yet.",
+        no_rows: "No rows to display.",
+        showing_rows: "Showing {shown} of {total} rows.",
+        all_rows: "{total} rows.",
+        parse_failed: "Parse failed: {message}",
+        choose_file: "Please upload an .ics file first.",
+        no_report: "No duplicate report is available yet.",
+        saved: "File generated.",
+        clean_sheet: "Clean_Amount",
+        raw_sheet: "Raw_Original",
+        summary_sheet: "Summary",
+        col_issue_type: "Issue Type",
+        col_rows: "Rows",
+        report_missing_uid: "Missing UID (Raw)",
+        report_cancelled: "Cancelled/deleted events (Raw)",
+        report_multi_version: "Multiple versions, same UID (Raw)",
+        report_duplicate_event_key: "Exact EVENT_KEY duplicates (Raw)",
+        report_same_patient_time: "Same patient & time (Clean, suspected)",
+        report_none: "No obvious duplicates / anomalies detected",
+        rules_title: "Visit Types & Prices",
+        rules_help: "Add the visit types you use. Keywords are matched top-down when importing calendar events.",
+        rules_guide_title: "How keyword matching works",
+        rules_guide_body: "Put different descriptions of the same visit type in one row, separated by English commas. Example: SOC, Start of Care, Initial Visit. The app checks rows from top to bottom and uses the first match.",
+        add_rule: "Add",
+        delete_rule: "Delete selected",
+        move_up: "Move up",
+        move_down: "Move down",
+        reset_defaults: "Reset defaults",
+        export_settings: "Export settings",
+        import_settings: "Import settings",
+        rule_code: "Code",
+        rule_keywords: "Match keywords (comma-separated)",
+        rule_keywords_placeholder: "Example: SOC, Start of Care, Initial Visit",
+        rule_amount: "Amount ($)",
+        rule_oasis: "OASIS required",
+        cancel: "Cancel",
+        save: "Save",
+        invalid_code: "Code cannot be empty on row {row}.",
+        invalid_amount: "Amount must be a number on row {row}.",
+        duplicate_code: "Duplicate code: {code}.",
+        settings_saved: "Visit type settings saved.",
+        settings_exported: "Settings exported.",
+        settings_imported: "Settings imported.",
+        import_failed: "Import failed: {message}",
+        invalid_settings_file: "This settings file is not valid.",
+      },
+      zh: {
+        app_title: "ICS Visits 管理",
+        app_subtitle: "本地离线 .ics 访视解析与 Excel 导出工具",
+        privacy_note: "本文件完全在浏览器本地运行，不会把病人数据上传、传输或保存到任何服务器。",
+        language: "语言",
+        upload_ics: "上传 .ics 文件",
+        visit_type_settings: "访视类型设置",
+        reset: "重置",
+        include_cancelled: "包含已取消事件到 Clean",
+        status_ready: "请上传 .ics 文件。",
+        status_reset: "已重置，请上传 .ics 文件。",
+        status_loaded: "已加载: {name} | Raw: {raw} 条 | Clean: {clean} 条",
+        quick_select: "快速选择",
+        preset_today: "本日",
+        preset_week: "本周",
+        preset_month: "本月",
+        preset_last_month: "上月",
+        preset_all: "全部",
+        preset_custom: "自定义",
+        from: "从",
+        to: "到",
+        total_amount: "总金额: ${amount}",
+        visit_count: "Visits 数量: {count}",
+        export_clean: "导出 Clean Excel",
+        export_bundle: "导出 Bundle",
+        export_raw: "导出 Raw Excel",
+        export_dup: "导出 Duplicate Report",
+        tab_clean: "Clean 数据",
+        tab_raw: "Raw 原版",
+        tab_dup: "重复检测",
+        issue_summary: "问题汇总",
+        issue_details: "问题明细",
+        no_data: "还没有数据。",
+        no_rows: "没有可显示的行。",
+        showing_rows: "正在显示 {total} 行中的 {shown} 行。",
+        all_rows: "共 {total} 行。",
+        parse_failed: "解析失败: {message}",
+        choose_file: "请先上传 .ics 文件。",
+        no_report: "还没有重复检测报告。",
+        saved: "文件已生成。",
+        clean_sheet: "Clean_Amount",
+        raw_sheet: "Raw_Original",
+        summary_sheet: "Summary",
+        col_issue_type: "问题类型",
+        col_rows: "条数",
+        report_missing_uid: "UID 缺失(Raw)",
+        report_cancelled: "被取消/删除事件(Raw)",
+        report_multi_version: "同一 UID 的多版本(Raw)",
+        report_duplicate_event_key: "EVENT_KEY 完全重复(Raw)",
+        report_same_patient_time: "同病人同时间重复(Clean，疑似)",
+        report_none: "未检测到明显重复/异常",
+        rules_title: "访视类型与价格",
+        rules_help: "在这里添加你常用的访视类型。导入日历时，程序会按从上到下的顺序匹配关键词。",
+        rules_guide_title: "关键词匹配规则",
+        rules_guide_body: "同一种访视的不同写法放在同一行，用英文逗号分隔。例：SOC, Start of Care, Initial Visit。程序会从上到下匹配，先命中的规则先生效。",
+        add_rule: "添加",
+        delete_rule: "删除选中",
+        move_up: "上移",
+        move_down: "下移",
+        reset_defaults: "恢复默认",
+        export_settings: "导出设置",
+        import_settings: "导入设置",
+        rule_code: "代号",
+        rule_keywords: "匹配关键词（逗号分隔）",
+        rule_keywords_placeholder: "例：SOC, Start of Care, Initial Visit",
+        rule_amount: "金额 ($)",
+        rule_oasis: "需要 OASIS",
+        cancel: "取消",
+        save: "保存",
+        invalid_code: "第 {row} 行的代号不能为空。",
+        invalid_amount: "第 {row} 行的金额必须是数字。",
+        duplicate_code: "代号重复: {code}。",
+        settings_saved: "访视类型设置已保存。",
+        settings_exported: "设置已导出。",
+        settings_imported: "设置已导入。",
+        import_failed: "导入失败: {message}",
+        invalid_settings_file: "这个设置文件无效。",
+      },
+      es: {
+        app_title: "ICS Visits Manager",
+        app_subtitle: "Herramienta local sin conexión para leer visitas .ics y exportar a Excel",
+        privacy_note: "Este archivo funciona completamente sin conexión en su navegador. No sube, transmite ni guarda datos de pacientes en ningún servidor.",
+        language: "Idioma",
+        upload_ics: "Subir archivo .ics",
+        visit_type_settings: "Tipos de visita",
+        reset: "Restablecer",
+        include_cancelled: "Incluir eventos cancelados en Clean",
+        status_ready: "Suba un archivo .ics.",
+        status_reset: "Se restableció la información. Suba un archivo .ics.",
+        status_loaded: "Cargado: {name} | Raw: {raw} filas | Clean: {clean} filas",
+        quick_select: "Selección rápida",
+        preset_today: "Hoy",
+        preset_week: "Esta semana",
+        preset_month: "Este mes",
+        preset_last_month: "Mes pasado",
+        preset_all: "Todo",
+        preset_custom: "Personalizado",
+        from: "Desde",
+        to: "Hasta",
+        total_amount: "Total: ${amount}",
+        visit_count: "Visitas: {count}",
+        export_clean: "Exportar Clean Excel",
+        export_bundle: "Exportar Bundle",
+        export_raw: "Exportar Raw Excel",
+        export_dup: "Exportar reporte de duplicados",
+        tab_clean: "Datos Clean",
+        tab_raw: "Raw original",
+        tab_dup: "Duplicados",
+        issue_summary: "Resumen de problemas",
+        issue_details: "Detalles del problema",
+        no_data: "Todavía no hay datos.",
+        no_rows: "No hay filas para mostrar.",
+        showing_rows: "Mostrando {shown} de {total} filas.",
+        all_rows: "{total} filas.",
+        parse_failed: "No se pudo procesar: {message}",
+        choose_file: "Primero suba un archivo .ics.",
+        no_report: "Todavía no hay reporte de duplicados.",
+        saved: "Archivo generado.",
+        clean_sheet: "Clean_Amount",
+        raw_sheet: "Raw_Original",
+        summary_sheet: "Summary",
+        col_issue_type: "Tipo de problema",
+        col_rows: "Filas",
+        report_missing_uid: "UID faltante (Raw)",
+        report_cancelled: "Eventos cancelados/eliminados (Raw)",
+        report_multi_version: "Varias versiones con el mismo UID (Raw)",
+        report_duplicate_event_key: "Duplicados exactos de EVENT_KEY (Raw)",
+        report_same_patient_time: "Mismo paciente y hora (Clean, posible duplicado)",
+        report_none: "No se detectaron duplicados ni anomalías evidentes",
+        rules_title: "Tipos de visita y precios",
+        rules_help: "Agregue los tipos de visita que usa. Al importar el calendario, las palabras clave se revisan de arriba hacia abajo.",
+        rules_guide_title: "Cómo funciona la búsqueda por palabras clave",
+        rules_guide_body: "Ponga las diferentes descripciones del mismo tipo de visita en una sola fila, separadas por comas en inglés. Ejemplo: SOC, Start of Care, Initial Visit. La aplicación revisa las filas de arriba hacia abajo y usa la primera coincidencia.",
+        add_rule: "Agregar",
+        delete_rule: "Eliminar seleccionado",
+        move_up: "Subir",
+        move_down: "Bajar",
+        reset_defaults: "Restaurar predeterminados",
+        export_settings: "Exportar configuración",
+        import_settings: "Importar configuración",
+        rule_code: "Código",
+        rule_keywords: "Palabras clave (separadas por comas)",
+        rule_keywords_placeholder: "Ejemplo: SOC, Start of Care, Initial Visit",
+        rule_amount: "Monto ($)",
+        rule_oasis: "Requiere OASIS",
+        cancel: "Cancelar",
+        save: "Guardar",
+        invalid_code: "El código no puede estar vacío en la fila {row}.",
+        invalid_amount: "El monto debe ser un número en la fila {row}.",
+        duplicate_code: "Código duplicado: {code}.",
+        settings_saved: "Se guardaron los tipos de visita.",
+        settings_exported: "Configuración exportada.",
+        settings_imported: "Configuración importada.",
+        import_failed: "No se pudo importar: {message}",
+        invalid_settings_file: "Este archivo de configuración no es válido.",
+      },
+    };
+
+    const DEFAULT_RULES = [
+      { code: "SOC", keywords: ["SOC"], amount: 100, oasis: true },
+      { code: "RECERT", keywords: ["RECERT"], amount: 70, oasis: true },
+      { code: "ROC", keywords: ["ROC"], amount: 70, oasis: true },
+      { code: "DC", keywords: ["DC"], amount: 60, oasis: true },
+      { code: "FU", keywords: ["FOLLOW UP", "F/U", "FU"], amount: 65, oasis: false },
+      { code: "IV", keywords: ["IV"], amount: 65, oasis: false },
+    ];
+
+    const CLEAN_COLS = ["Date", "Time In", "Time Out", "Patient Name", "Visit Type", "Location", "Amount", "OASIS Required?"];
+    const RAW_COLS = [
+      "EVENT_KEY", "UID", "RECURRENCE-ID", "SEQUENCE", "LAST-MODIFIED", "DTSTAMP", "STATUS", "CANCELLED?",
+      "Summary (Raw)", "Patient Name (Parsed)", "Visit Type (Raw)", "DTSTART (Raw)", "DTEND (Raw)",
+      "Date (Parsed)", "Time In (Parsed)", "Time Out (Parsed)", "Location (Raw)", "Description (Raw)"
+    ];
+    const REPORT_KEYS = [
+      "report_missing_uid",
+      "report_cancelled",
+      "report_multi_version",
+      "report_duplicate_event_key",
+      "report_same_patient_time",
+    ];
+    const DISPLAY_LIMIT = 600;
+
+    const state = {
+      lang: localStorage.getItem("icsVisits.lang") || "en",
+      rules: loadRules(),
+      rawText: "",
+      fileName: "",
+      rawRows: [],
+      cleanRows: [],
+      filteredRows: [],
+      report: { tables: {} },
+      activeIssueKey: "",
+    };
+
+    const $ = (id) => document.getElementById(id);
+
+    function tr(key, values = {}) {
+      let text = (I18N[state.lang] && I18N[state.lang][key]) || I18N.en[key] || key;
+      return text.replace(/\{(\w+)\}/g, (_, name) => values[name] ?? "");
+    }
+
+    function loadRules() {
+      try {
+        const parsed = JSON.parse(localStorage.getItem("icsVisits.rules") || "null");
+        if (Array.isArray(parsed) && parsed.length) {
+          return parsed.map((rule) => ({
+            code: String(rule.code || "").trim(),
+            keywords: Array.isArray(rule.keywords) ? rule.keywords.map(String).map((x) => x.trim()).filter(Boolean) : [],
+            amount: Number(rule.amount || 0),
+            oasis: Boolean(rule.oasis),
+          })).filter((rule) => rule.code);
+        }
+      } catch (error) {
+        console.warn("Could not load custom visit rules", error);
+      }
+      return cloneRules(DEFAULT_RULES);
+    }
+
+    function cloneRules(rules) {
+      return rules.map((rule) => ({
+        code: rule.code,
+        keywords: [...rule.keywords],
+        amount: Number(rule.amount || 0),
+        oasis: Boolean(rule.oasis),
+      }));
+    }
+
+    function saveRules(rules) {
+      localStorage.setItem("icsVisits.rules", JSON.stringify(rules));
+    }
+
+    function setLanguage(lang) {
+      state.lang = lang in I18N ? lang : "en";
+      localStorage.setItem("icsVisits.lang", state.lang);
+      document.documentElement.lang = state.lang === "zh" ? "zh-CN" : (state.lang === "es" ? "es-US" : "en");
+      $("languageSelect").value = state.lang;
+      document.querySelectorAll("[data-i18n]").forEach((node) => {
+        node.textContent = tr(node.dataset.i18n);
+      });
+      renderAll();
+    }
+
+    function formatMoney(value) {
+      const n = Number(value || 0);
+      return n.toLocaleString(undefined, { maximumFractionDigits: 2 });
+    }
+
+    function escapeHtml(value) {
+      return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+    }
+
+    function escapeXml(value) {
+      return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&apos;");
+    }
+
+    function formatDateInput(date) {
+      const yyyy = date.getFullYear();
+      const mm = String(date.getMonth() + 1).padStart(2, "0");
+      const dd = String(date.getDate()).padStart(2, "0");
+      return `${yyyy}-${mm}-${dd}`;
+    }
+
+    function getWeekStart(date) {
+      const d = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+      const day = d.getDay();
+      const delta = day === 0 ? -6 : 1 - day;
+      d.setDate(d.getDate() + delta);
+      return d;
+    }
+
+    function setPreset(value) {
+      const today = new Date();
+      let from = "";
+      let to = "";
+      if (value === "today") {
+        from = to = formatDateInput(today);
+      } else if (value === "week") {
+        const start = getWeekStart(today);
+        const end = new Date(start);
+        end.setDate(start.getDate() + 6);
+        from = formatDateInput(start);
+        to = formatDateInput(end);
+      } else if (value === "month") {
+        from = formatDateInput(new Date(today.getFullYear(), today.getMonth(), 1));
+        to = formatDateInput(new Date(today.getFullYear(), today.getMonth() + 1, 0));
+      } else if (value === "lastMonth") {
+        from = formatDateInput(new Date(today.getFullYear(), today.getMonth() - 1, 1));
+        to = formatDateInput(new Date(today.getFullYear(), today.getMonth(), 0));
+      }
+      $("dateFrom").value = from;
+      $("dateTo").value = to;
+      applyFilters();
+    }
+
+    function unfoldIcs(text) {
+      const rawLines = text.replace(/\r\n/g, "\n").replace(/\r/g, "\n").split("\n");
+      const lines = [];
+      for (const line of rawLines) {
+        if ((line.startsWith(" ") || line.startsWith("\t")) && lines.length) {
+          lines[lines.length - 1] += line.slice(1);
+        } else {
+          lines.push(line);
+        }
+      }
+      return lines;
+    }
+
+    function parsePropertyLine(line) {
+      const idx = line.indexOf(":");
+      if (idx < 0) return null;
+      const left = line.slice(0, idx);
+      const value = decodeIcsText(line.slice(idx + 1));
+      const parts = left.split(";");
+      return { name: parts[0].toUpperCase(), value, params: parts.slice(1) };
+    }
+
+    function decodeIcsText(value) {
+      return String(value ?? "")
+        .replace(/\\n/gi, "\n")
+        .replace(/\\,/g, ",")
+        .replace(/\\;/g, ";")
+        .replace(/\\\\/g, "\\");
+    }
+
+    function parseCalendar(text) {
+      const lines = unfoldIcs(text);
+      const events = [];
+      const calendarProps = {};
+      let current = null;
+
+      for (const line of lines) {
+        if (!line.trim()) continue;
+        const prop = parsePropertyLine(line);
+        if (!prop) continue;
+        if (prop.name === "BEGIN" && prop.value.toUpperCase() === "VEVENT") {
+          current = {};
+          continue;
+        }
+        if (prop.name === "END" && prop.value.toUpperCase() === "VEVENT") {
+          if (current) events.push(current);
+          current = null;
+          continue;
+        }
+        if (current) {
+          current[prop.name] = prop.value;
+        } else {
+          calendarProps[prop.name] = prop.value;
+        }
+      }
+      return { events, calendarProps };
+    }
+
+    function parseIcsDate(value) {
+      if (!value) return { iso: null, date: null, time: null, sort: "" };
+      const s = String(value).trim();
+      let m = s.match(/^(\d{4})(\d{2})(\d{2})$/);
+      if (m) {
+        const date = `${m[1]}-${m[2]}-${m[3]}`;
+        return { iso: date, date, time: null, sort: `${date} 00:00:00` };
+      }
+      m = s.match(/^(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})(Z?)$/);
+      if (m) {
+        const date = `${m[1]}-${m[2]}-${m[3]}`;
+        const time = `${m[4]}:${m[5]}:${m[6]}`;
+        return { iso: `${date} ${time}`, date, time, sort: `${date} ${time}` };
+      }
+      return { iso: s, date: s.slice(0, 10) || null, time: null, sort: s };
+    }
+
+    function splitSummary(summary) {
+      if (!summary) return [null, null];
+      const s = String(summary).replace(/[—–]/g, "-").trim();
+      if (s.includes(" - ")) {
+        const idx = s.indexOf(" - ");
+        return [s.slice(0, idx).trim(), s.slice(idx + 3).trim()];
+      }
+      if (s.includes("-")) {
+        const idx = s.indexOf("-");
+        return [s.slice(0, idx).trim(), s.slice(idx + 1).trim()];
+      }
+      return [s, null];
+    }
+
+    function applyVisitRules(rawType, rules) {
+      if (!rawType) return { code: null, amount: 0, oasis: "NO" };
+      const normalized = String(rawType).toUpperCase().replace(/-/g, " ").trim();
+      for (const rule of rules) {
+        for (const keyword of rule.keywords || []) {
+          const kw = String(keyword).toUpperCase().trim();
+          if (kw && normalized.includes(kw)) {
+            return {
+              code: rule.code,
+              amount: Number(rule.amount || 0),
+              oasis: rule.oasis ? "YES" : "NO",
+            };
+          }
+        }
+      }
+      return { code: normalized, amount: 0, oasis: "NO" };
+    }
+
+    function isCancelledEvent(event, calendarCancelMode) {
+      const status = String(event.STATUS || "").toUpperCase();
+      const summary = String(event.SUMMARY || "").trim().toLowerCase();
+      return calendarCancelMode ||
+        status === "CANCELLED" ||
+        status === "CANCELED" ||
+        summary.startsWith("cancelled") ||
+        summary.startsWith("canceled") ||
+        summary.startsWith("cancel");
+    }
+
+    function compareValues(a, b) {
+      const av = a == null ? "" : String(a);
+      const bv = b == null ? "" : String(b);
+      return av < bv ? -1 : av > bv ? 1 : 0;
+    }
+
+    function parseIcs(text, includeCancelled, rules) {
+      const { events, calendarProps } = parseCalendar(text);
+      const calendarCancelMode = String(calendarProps.METHOD || "").toUpperCase() === "CANCEL";
+      const rawRows = [];
+      let cleanRows = [];
+
+      for (const event of events) {
+        const summary = event.SUMMARY || null;
+        const location = event.LOCATION || null;
+        const uid = event.UID || null;
+        const description = event.DESCRIPTION || null;
+        const status = event.STATUS ? String(event.STATUS).toUpperCase() : null;
+        const sequence = Number.parseInt(event.SEQUENCE || "0", 10) || 0;
+        const start = parseIcsDate(event.DTSTART);
+        const end = parseIcsDate(event.DTEND);
+        const recurrenceId = parseIcsDate(event["RECURRENCE-ID"]);
+        const lastModified = parseIcsDate(event["LAST-MODIFIED"]);
+        const dtstamp = parseIcsDate(event.DTSTAMP);
+        const [patient, rawType] = splitSummary(summary);
+        const ruleResult = applyVisitRules(rawType, rules);
+        const cancelled = isCancelledEvent(event, calendarCancelMode);
+        const uidFallback = uid || `NOUID|${summary || ""}|${location || ""}`;
+        const ridIso = event["RECURRENCE-ID"] ? recurrenceId.iso : "";
+        const eventKey = `${uidFallback}|RID=${ridIso}|${start.iso || ""}|${end.iso || ""}|${summary || ""}|${location || ""}`;
+
+        rawRows.push({
+          "EVENT_KEY": eventKey,
+          "UID": uid,
+          "RECURRENCE-ID": event["RECURRENCE-ID"] ? recurrenceId.iso : null,
+          "SEQUENCE": sequence,
+          "LAST-MODIFIED": lastModified.iso,
+          "DTSTAMP": dtstamp.iso,
+          "STATUS": status,
+          "CANCELLED?": cancelled ? "YES" : "NO",
+          "Summary (Raw)": summary,
+          "Patient Name (Parsed)": patient,
+          "Visit Type (Raw)": rawType,
+          "DTSTART (Raw)": start.iso,
+          "DTEND (Raw)": end.iso,
+          "Date (Parsed)": start.date,
+          "Time In (Parsed)": start.time,
+          "Time Out (Parsed)": end.time,
+          "Location (Raw)": location,
+          "Description (Raw)": description,
+          "_sort_start": start.sort,
+          "_sort_lm": lastModified.sort,
+          "_sort_ds": dtstamp.sort,
+        });
+
+        if (cancelled && !includeCancelled) continue;
+
+        cleanRows.push({
+          "EVENT_KEY": eventKey,
+          "Date": start.date,
+          "Time In": start.time,
+          "Time Out": end.time,
+          "Patient Name": patient,
+          "Visit Type": ruleResult.code,
+          "Location": location,
+          "Amount": ruleResult.amount,
+          "OASIS Required?": ruleResult.oasis,
+        });
+      }
+
+      rawRows.sort((a, b) =>
+        compareValues(a.UID, b.UID) ||
+        compareValues(a["RECURRENCE-ID"], b["RECURRENCE-ID"]) ||
+        compareValues(a["DTSTART (Raw)"], b["DTSTART (Raw)"]) ||
+        Number(a.SEQUENCE || 0) - Number(b.SEQUENCE || 0) ||
+        compareValues(a._sort_lm, b._sort_lm) ||
+        compareValues(a._sort_ds, b._sort_ds)
+      );
+
+      const nonEmptyMap = new Map();
+      const emptyUidRows = [];
+      for (const row of rawRows) {
+        const uid = String(row.UID || "").trim();
+        if (!uid) {
+          emptyUidRows.push(row);
+        } else {
+          nonEmptyMap.set(`${row.UID}|${row["RECURRENCE-ID"] || ""}|${row["DTSTART (Raw)"] || ""}`, row);
+        }
+      }
+      let dedupedRaw = [...nonEmptyMap.values(), ...emptyUidRows];
+      const eventKeyMap = new Map();
+      for (const row of dedupedRaw) eventKeyMap.set(row.EVENT_KEY, row);
+      dedupedRaw = [...eventKeyMap.values()].map(({ _sort_start, _sort_lm, _sort_ds, ...row }) => row);
+
+      const keepKeys = new Set(dedupedRaw.map((row) => row.EVENT_KEY));
+      cleanRows = cleanRows.filter((row) => keepKeys.has(row.EVENT_KEY));
+
+      return { rawRows: dedupedRaw, cleanRows };
+    }
+
+    function groupRows(rows, columns) {
+      const map = new Map();
+      for (const row of rows) {
+        const key = columns.map((col) => row[col] ?? "").join("\u001f");
+        if (!map.has(key)) map.set(key, []);
+        map.get(key).push(row);
+      }
+      return map;
+    }
+
+    function buildDuplicateReport(rawRows, cleanRows) {
+      const tables = {};
+      const missingUid = rawRows.filter((row) => !String(row.UID || "").trim());
+      if (missingUid.length) tables.report_missing_uid = missingUid;
+
+      const cancelled = rawRows.filter((row) => row["CANCELLED?"] === "YES");
+      if (cancelled.length) tables.report_cancelled = cancelled;
+
+      const withUid = rawRows.filter((row) => String(row.UID || "").trim());
+      const versionGroups = groupRows(withUid, ["UID", "RECURRENCE-ID", "DTSTART (Raw)"]);
+      const multiVersion = [];
+      for (const rows of versionGroups.values()) {
+        if (rows.length > 1) multiVersion.push(...rows);
+      }
+      if (multiVersion.length) tables.report_multi_version = multiVersion;
+
+      const eventKeyGroups = groupRows(rawRows, ["EVENT_KEY"]);
+      const duplicateEventKeys = [];
+      for (const rows of eventKeyGroups.values()) {
+        if (rows.length > 1) duplicateEventKeys.push(...rows);
+      }
+      if (duplicateEventKeys.length) tables.report_duplicate_event_key = duplicateEventKeys;
+
+      const patientTimeGroups = groupRows(cleanRows, ["Date", "Time In", "Patient Name"]);
+      const samePatientTime = [];
+      for (const rows of patientTimeGroups.values()) {
+        if (rows.length > 1) samePatientTime.push(...rows);
+      }
+      if (samePatientTime.length) tables.report_same_patient_time = samePatientTime;
+
+      return { tables };
+    }
+
+    function applyFilters() {
+      const from = $("dateFrom").value;
+      const to = $("dateTo").value;
+      state.filteredRows = state.cleanRows.filter((row) => {
+        const date = row.Date || "";
+        if (from && date < from) return false;
+        if (to && date > to) return false;
+        return true;
+      });
+      renderAll();
+    }
+
+    function renderAll() {
+      renderStatus();
+      renderStats();
+      renderTables();
+      renderDuplicateReport();
+      updateExportButtons();
+    }
+
+    function renderStatus() {
+      if (!state.fileName) {
+        $("statusLine").textContent = tr("status_ready");
+      } else {
+        $("statusLine").textContent = tr("status_loaded", {
+          name: state.fileName,
+          raw: state.rawRows.length,
+          clean: state.cleanRows.length,
+        });
+      }
+    }
+
+    function renderStats() {
+      const amount = state.filteredRows.reduce((sum, row) => sum + Number(row.Amount || 0), 0);
+      $("amountStat").textContent = tr("total_amount", { amount: formatMoney(amount) });
+      $("visitStat").textContent = tr("visit_count", { count: state.filteredRows.length });
+    }
+
+    function tableInfo(rows) {
+      if (!rows.length) return tr("no_rows");
+      if (rows.length > DISPLAY_LIMIT) {
+        return tr("showing_rows", { shown: DISPLAY_LIMIT, total: rows.length });
+      }
+      return tr("all_rows", { total: rows.length });
+    }
+
+    function renderTable(target, rows, columns, options = {}) {
+      const container = $(target);
+      if (!rows.length) {
+        container.innerHTML = `<div class="empty">${escapeHtml(tr("no_rows"))}</div>`;
+        return;
+      }
+      const visibleRows = rows.slice(0, DISPLAY_LIMIT);
+      const html = [
+        "<table><thead><tr>",
+        ...columns.map((col) => `<th>${escapeHtml(col)}</th>`),
+        "</tr></thead><tbody>",
+      ];
+      for (const row of visibleRows) {
+        html.push("<tr>");
+        for (const col of columns) {
+          const value = row[col] ?? "";
+          let cls = "";
+          if (options.oasisColumn === col) {
+            cls = value === "YES" ? " class=\"cell-yes\"" : " class=\"cell-no\"";
+          }
+          html.push(`<td${cls} title="${escapeHtml(value)}">${escapeHtml(value)}</td>`);
+        }
+        html.push("</tr>");
+      }
+      html.push("</tbody></table>");
+      container.innerHTML = html.join("");
+    }
+
+    function renderTables() {
+      $("cleanTableInfo").textContent = tableInfo(state.filteredRows);
+      renderTable("cleanTable", state.filteredRows, CLEAN_COLS, { oasisColumn: "OASIS Required?" });
+
+      $("rawTableInfo").textContent = tableInfo(state.rawRows);
+      renderTable("rawTable", state.rawRows, RAW_COLS);
+    }
+
+    function renderDuplicateReport() {
+      const tables = state.report.tables || {};
+      const entries = Object.keys(tables).map((key) => [key, tables[key]]);
+      const issueList = $("issueList");
+      if (!entries.length) {
+        issueList.innerHTML = `<div class="issue-item active"><span>${escapeHtml(tr("report_none"))}</span><span>0</span></div>`;
+        $("issueTitle").textContent = tr("issue_details");
+        $("dupTableInfo").textContent = tr("no_report");
+        $("dupTable").innerHTML = `<div class="empty">${escapeHtml(tr("report_none"))}</div>`;
+        return;
+      }
+
+      if (!state.activeIssueKey || !(state.activeIssueKey in tables)) {
+        state.activeIssueKey = entries[0][0];
+      }
+
+      issueList.innerHTML = entries.map(([key, rows]) => (
+        `<div class="issue-item ${key === state.activeIssueKey ? "active" : ""}" data-issue="${key}">
+          <span>${escapeHtml(tr(key))}</span><span>${rows.length}</span>
+        </div>`
+      )).join("");
+
+      issueList.querySelectorAll("[data-issue]").forEach((node) => {
+        node.addEventListener("click", () => {
+          state.activeIssueKey = node.dataset.issue;
+          renderDuplicateReport();
+        });
+      });
+
+      const rows = tables[state.activeIssueKey] || [];
+      const columns = state.activeIssueKey === "report_same_patient_time" ? CLEAN_COLS : RAW_COLS;
+      $("issueTitle").textContent = tr(state.activeIssueKey);
+      $("dupTableInfo").textContent = tableInfo(rows);
+      renderTable("dupTable", rows, columns, { oasisColumn: "OASIS Required?" });
+    }
+
+    function updateExportButtons() {
+      const hasClean = state.filteredRows.length > 0;
+      const hasRaw = state.rawRows.length > 0;
+      $("exportClean").disabled = !hasClean;
+      $("exportBundle").disabled = !hasRaw;
+      $("exportRaw").disabled = !hasRaw;
+      $("exportDup").disabled = !hasRaw;
+    }
+
+    function resetData() {
+      state.rawText = "";
+      state.fileName = "";
+      state.rawRows = [];
+      state.cleanRows = [];
+      state.filteredRows = [];
+      state.report = { tables: {} };
+      state.activeIssueKey = "";
+      $("icsInput").value = "";
+      $("presetSelect").value = "all";
+      $("dateFrom").value = "";
+      $("dateTo").value = "";
+      $("statusLine").textContent = tr("status_reset");
+      renderAll();
+    }
+
+    async function handleFile(file) {
+      if (!file) return;
+      try {
+        const text = await file.text();
+        state.rawText = text;
+        state.fileName = file.name;
+        reparseCurrentFile();
+      } catch (error) {
+        alert(tr("parse_failed", { message: error.message || String(error) }));
+      }
+    }
+
+    function reparseCurrentFile() {
+      if (!state.rawText) return;
+      try {
+        const parsed = parseIcs(state.rawText, $("includeCancelled").checked, state.rules);
+        state.rawRows = parsed.rawRows;
+        state.cleanRows = parsed.cleanRows;
+        state.report = buildDuplicateReport(state.rawRows, state.cleanRows);
+        state.activeIssueKey = "";
+        applyFilters();
+      } catch (error) {
+        alert(tr("parse_failed", { message: error.message || String(error) }));
+      }
+    }
+
+    function openRulesModal() {
+      renderRulesTable(cloneRules(state.rules));
+      $("rulesError").textContent = "";
+      $("rulesModal").classList.add("active");
+    }
+
+    function closeRulesModal() {
+      $("rulesModal").classList.remove("active");
+    }
+
+    function renderRulesTable(rules) {
+      const body = $("rulesBody");
+      body.innerHTML = rules.map((rule, idx) => `
+        <tr data-index="${idx}">
+          <td><input type="text" data-field="code" value="${escapeHtml(rule.code)}"></td>
+          <td><input type="text" data-field="keywords" placeholder="${escapeHtml(tr("rule_keywords_placeholder"))}" value="${escapeHtml((rule.keywords || []).join(", "))}"></td>
+          <td><input type="number" data-field="amount" min="0" step="1" value="${escapeHtml(rule.amount)}"></td>
+          <td style="text-align:center;"><input type="checkbox" data-field="oasis" ${rule.oasis ? "checked" : ""}></td>
+        </tr>
+      `).join("");
+      body.querySelectorAll("tr").forEach((row) => {
+        row.addEventListener("click", () => {
+          body.querySelectorAll("tr").forEach((x) => x.classList.remove("selected"));
+          row.classList.add("selected");
+        });
+      });
+    }
+
+    function readRulesFromTable() {
+      const rows = [...$("rulesBody").querySelectorAll("tr")];
+      return rows.map((row) => {
+        const code = row.querySelector('[data-field="code"]').value.trim();
+        const keywords = row.querySelector('[data-field="keywords"]').value
+          .split(",")
+          .map((x) => x.trim())
+          .filter(Boolean);
+        const amount = Number(row.querySelector('[data-field="amount"]').value || 0);
+        const oasis = row.querySelector('[data-field="oasis"]').checked;
+        return { code, keywords, amount, oasis };
+      });
+    }
+
+    function validateRules(rules) {
+      const seen = new Set();
+      for (let i = 0; i < rules.length; i++) {
+        const row = i + 1;
+        const rule = rules[i];
+        if (!rule.code) return tr("invalid_code", { row });
+        if (!Number.isFinite(rule.amount)) return tr("invalid_amount", { row });
+        const key = rule.code.toUpperCase();
+        if (seen.has(key)) return tr("duplicate_code", { code: rule.code });
+        seen.add(key);
+      }
+      return "";
+    }
+
+    function getSelectedRuleIndex() {
+      const selected = $("rulesBody").querySelector("tr.selected");
+      return selected ? Number(selected.dataset.index) : -1;
+    }
+
+    function updateRulesTable(mutator) {
+      const rules = readRulesFromTable();
+      const selected = getSelectedRuleIndex();
+      const nextSelected = mutator(rules, selected);
+      renderRulesTable(rules);
+      const row = $("rulesBody").querySelector(`tr[data-index="${nextSelected}"]`);
+      if (row) row.classList.add("selected");
+    }
+
+    function saveRulesFromModal() {
+      const rules = readRulesFromTable();
+      const error = validateRules(rules);
+      if (error) {
+        $("rulesError").textContent = error;
+        return;
+      }
+      state.rules = rules;
+      saveRules(rules);
+      closeRulesModal();
+      if (state.rawText) reparseCurrentFile();
+      else renderAll();
+      $("statusLine").textContent = tr("settings_saved");
+    }
+
+    function normalizeSettingsRules(data) {
+      const source = Array.isArray(data) ? data : (data && Array.isArray(data.rules) ? data.rules : null);
+      if (!source) return [];
+      return source.map((rule) => ({
+        code: String(rule.code || "").trim(),
+        keywords: Array.isArray(rule.keywords)
+          ? rule.keywords.map((x) => String(x).trim()).filter(Boolean)
+          : String(rule.keywords || "").split(",").map((x) => x.trim()).filter(Boolean),
+        amount: Number(rule.amount || 0),
+        oasis: Boolean(rule.oasis),
+      })).filter((rule) => rule.code);
+    }
+
+    function downloadTextFile(filename, text, type = "application/json") {
+      const blob = new Blob([text], { type });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 2000);
+    }
+
+    function exportSettingsFile() {
+      const rules = readRulesFromTable();
+      const error = validateRules(rules);
+      if (error) {
+        $("rulesError").textContent = error;
+        return;
+      }
+      const payload = {
+        app: "ICS Visits Manager",
+        version: 1,
+        exportedAt: new Date().toISOString(),
+        rules,
+      };
+      downloadTextFile("ics-visits-settings.json", JSON.stringify(payload, null, 2));
+      $("rulesError").textContent = "";
+      $("statusLine").textContent = tr("settings_exported");
+    }
+
+    async function importSettingsFile(file) {
+      if (!file) return;
+      try {
+        const data = JSON.parse(await file.text());
+        const rules = normalizeSettingsRules(data);
+        if (!rules.length) throw new Error(tr("invalid_settings_file"));
+        const error = validateRules(rules);
+        if (error) throw new Error(error);
+        state.rules = rules;
+        saveRules(rules);
+        renderRulesTable(cloneRules(rules));
+        $("rulesError").textContent = "";
+        if (state.rawText) reparseCurrentFile();
+        else renderAll();
+        $("statusLine").textContent = tr("settings_imported");
+      } catch (error) {
+        $("rulesError").textContent = tr("import_failed", { message: error.message || String(error) });
+      } finally {
+        $("importSettingsInput").value = "";
+      }
+    }
+
+    function colName(n) {
+      let s = "";
+      while (n > 0) {
+        const m = (n - 1) % 26;
+        s = String.fromCharCode(65 + m) + s;
+        n = Math.floor((n - 1) / 26);
+      }
+      return s;
+    }
+
+    function worksheetXml(sheet) {
+      const rows = sheet.rows || [];
+      const columns = sheet.columns || [];
+      const allRows = [columns, ...rows.map((row) => columns.map((col) => row[col] ?? ""))];
+      const maxRow = Math.max(1, allRows.length);
+      const maxCol = Math.max(1, columns.length);
+      const dimension = `A1:${colName(maxCol)}${maxRow}`;
+      const xml = [
+        '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>',
+        '<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">',
+        `<dimension ref="${dimension}"/>`,
+        '<sheetViews><sheetView workbookViewId="0"/></sheetViews>',
+        '<sheetFormatPr defaultRowHeight="15"/>',
+        '<sheetData>',
+      ];
+      allRows.forEach((row, rIdx) => {
+        const rowNum = rIdx + 1;
+        xml.push(`<row r="${rowNum}">`);
+        row.forEach((value, cIdx) => {
+          const col = columns[cIdx];
+          let style = rIdx === 0 ? 1 : 0;
+          if (rIdx > 0 && sheet.oasisColumn === col) style = value === "YES" ? 2 : 3;
+          const ref = `${colName(cIdx + 1)}${rowNum}`;
+          xml.push(cellXml(ref, value, style));
+        });
+        xml.push("</row>");
+      });
+      xml.push('</sheetData></worksheet>');
+      return xml.join("");
+    }
+
+    function cellXml(ref, value, style) {
+      const styleAttr = style ? ` s="${style}"` : "";
+      if (value === null || value === undefined || value === "") {
+        return `<c r="${ref}"${styleAttr}/>`;
+      }
+      if (typeof value === "number" && Number.isFinite(value)) {
+        return `<c r="${ref}"${styleAttr}><v>${value}</v></c>`;
+      }
+      return `<c r="${ref}" t="inlineStr"${styleAttr}><is><t>${escapeXml(value)}</t></is></c>`;
+    }
+
+    function stylesXml() {
+      return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">
+  <fonts count="2">
+    <font><sz val="11"/><name val="Calibri"/></font>
+    <font><b/><sz val="11"/><name val="Calibri"/></font>
+  </fonts>
+  <fills count="4">
+    <fill><patternFill patternType="none"/></fill>
+    <fill><patternFill patternType="gray125"/></fill>
+    <fill><patternFill patternType="solid"><fgColor rgb="FFC6EFCE"/><bgColor indexed="64"/></patternFill></fill>
+    <fill><patternFill patternType="solid"><fgColor rgb="FFFFC7CE"/><bgColor indexed="64"/></patternFill></fill>
+  </fills>
+  <borders count="1"><border><left/><right/><top/><bottom/><diagonal/></border></borders>
+  <cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs>
+  <cellXfs count="4">
+    <xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/>
+    <xf numFmtId="0" fontId="1" fillId="0" borderId="0" xfId="0" applyFont="1"/>
+    <xf numFmtId="0" fontId="0" fillId="2" borderId="0" xfId="0" applyFill="1"/>
+    <xf numFmtId="0" fontId="0" fillId="3" borderId="0" xfId="0" applyFill="1"/>
+  </cellXfs>
+  <cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles>
+</styleSheet>`;
+    }
+
+    function safeSheetName(name, fallback) {
+      const cleaned = String(name || fallback).replace(/[\\/*?:[\]]/g, "_").slice(0, 31);
+      return cleaned || fallback;
+    }
+
+    function makeXlsx(sheets) {
+      const files = {};
+      const safeSheets = sheets.map((sheet, idx) => ({
+        ...sheet,
+        name: safeSheetName(sheet.name, `Sheet${idx + 1}`),
+      }));
+      files["[Content_Types].xml"] = contentTypesXml(safeSheets.length);
+      files["_rels/.rels"] = rootRelsXml();
+      files["xl/workbook.xml"] = workbookXml(safeSheets);
+      files["xl/_rels/workbook.xml.rels"] = workbookRelsXml(safeSheets.length);
+      files["xl/styles.xml"] = stylesXml();
+      safeSheets.forEach((sheet, idx) => {
+        files[`xl/worksheets/sheet${idx + 1}.xml`] = worksheetXml(sheet);
+      });
+      return createZip(files);
+    }
+
+    function contentTypesXml(sheetCount) {
+      const sheets = Array.from({ length: sheetCount }, (_, idx) =>
+        `<Override PartName="/xl/worksheets/sheet${idx + 1}.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>`
+      ).join("");
+      return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">
+  <Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>
+  <Default Extension="xml" ContentType="application/xml"/>
+  <Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/>
+  <Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/>
+  ${sheets}
+</Types>`;
+    }
+
+    function rootRelsXml() {
+      return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
+  <Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/>
+</Relationships>`;
+    }
+
+    function workbookXml(sheets) {
+      const sheetXml = sheets.map((sheet, idx) =>
+        `<sheet name="${escapeXml(sheet.name)}" sheetId="${idx + 1}" r:id="rId${idx + 1}"/>`
+      ).join("");
+      return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">
+  <sheets>${sheetXml}</sheets>
+</workbook>`;
+    }
+
+    function workbookRelsXml(sheetCount) {
+      const rels = Array.from({ length: sheetCount }, (_, idx) =>
+        `<Relationship Id="rId${idx + 1}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet${idx + 1}.xml"/>`
+      ).join("");
+      return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
+  ${rels}
+  <Relationship Id="rId${sheetCount + 1}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/>
+</Relationships>`;
+    }
+
+    const crcTable = (() => {
+      const table = new Uint32Array(256);
+      for (let i = 0; i < 256; i++) {
+        let c = i;
+        for (let k = 0; k < 8; k++) c = (c & 1) ? (0xedb88320 ^ (c >>> 1)) : (c >>> 1);
+        table[i] = c >>> 0;
+      }
+      return table;
+    })();
+
+    function crc32(data) {
+      let crc = 0xffffffff;
+      for (let i = 0; i < data.length; i++) {
+        crc = crcTable[(crc ^ data[i]) & 0xff] ^ (crc >>> 8);
+      }
+      return (crc ^ 0xffffffff) >>> 0;
+    }
+
+    function dosDateTime() {
+      const d = new Date();
+      const time = (d.getHours() << 11) | (d.getMinutes() << 5) | Math.floor(d.getSeconds() / 2);
+      const date = ((d.getFullYear() - 1980) << 9) | ((d.getMonth() + 1) << 5) | d.getDate();
+      return { time, date };
+    }
+
+    function concatBytes(parts) {
+      const total = parts.reduce((sum, part) => sum + part.length, 0);
+      const out = new Uint8Array(total);
+      let offset = 0;
+      for (const part of parts) {
+        out.set(part, offset);
+        offset += part.length;
+      }
+      return out;
+    }
+
+    function headerBytes(size, writer) {
+      const buffer = new ArrayBuffer(size);
+      const view = new DataView(buffer);
+      writer(view);
+      return new Uint8Array(buffer);
+    }
+
+    function createZip(fileMap) {
+      const encoder = new TextEncoder();
+      const localParts = [];
+      const centralParts = [];
+      let offset = 0;
+      const { time, date } = dosDateTime();
+
+      for (const [path, content] of Object.entries(fileMap)) {
+        const name = encoder.encode(path);
+        const data = typeof content === "string" ? encoder.encode(content) : content;
+        const crc = crc32(data);
+        const localHeader = headerBytes(30, (view) => {
+          view.setUint32(0, 0x04034b50, true);
+          view.setUint16(4, 20, true);
+          view.setUint16(6, 0, true);
+          view.setUint16(8, 0, true);
+          view.setUint16(10, time, true);
+          view.setUint16(12, date, true);
+          view.setUint32(14, crc, true);
+          view.setUint32(18, data.length, true);
+          view.setUint32(22, data.length, true);
+          view.setUint16(26, name.length, true);
+          view.setUint16(28, 0, true);
+        });
+        localParts.push(localHeader, name, data);
+
+        const centralHeader = headerBytes(46, (view) => {
+          view.setUint32(0, 0x02014b50, true);
+          view.setUint16(4, 20, true);
+          view.setUint16(6, 20, true);
+          view.setUint16(8, 0, true);
+          view.setUint16(10, 0, true);
+          view.setUint16(12, time, true);
+          view.setUint16(14, date, true);
+          view.setUint32(16, crc, true);
+          view.setUint32(20, data.length, true);
+          view.setUint32(24, data.length, true);
+          view.setUint16(28, name.length, true);
+          view.setUint16(30, 0, true);
+          view.setUint16(32, 0, true);
+          view.setUint16(34, 0, true);
+          view.setUint16(36, 0, true);
+          view.setUint32(38, 0, true);
+          view.setUint32(42, offset, true);
+        });
+        centralParts.push(centralHeader, name);
+        offset += localHeader.length + name.length + data.length;
+      }
+
+      const centralDir = concatBytes(centralParts);
+      const end = headerBytes(22, (view) => {
+        view.setUint32(0, 0x06054b50, true);
+        view.setUint16(4, 0, true);
+        view.setUint16(6, 0, true);
+        view.setUint16(8, Object.keys(fileMap).length, true);
+        view.setUint16(10, Object.keys(fileMap).length, true);
+        view.setUint32(12, centralDir.length, true);
+        view.setUint32(16, offset, true);
+        view.setUint16(20, 0, true);
+      });
+
+      return concatBytes([...localParts, centralDir, end]);
+    }
+
+    function downloadXlsx(filename, sheets) {
+      const bytes = makeXlsx(sheets);
+      const blob = new Blob([bytes], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 2000);
+      $("statusLine").textContent = tr("saved");
+    }
+
+    function exportClean() {
+      if (!state.filteredRows.length) return alert(tr("choose_file"));
+      downloadXlsx("HH_Visits_Filtered.xlsx", [{
+        name: tr("clean_sheet"),
+        columns: CLEAN_COLS,
+        rows: state.filteredRows,
+        oasisColumn: "OASIS Required?",
+      }]);
+    }
+
+    function exportRaw() {
+      if (!state.rawRows.length) return alert(tr("choose_file"));
+      downloadXlsx("HH_Visits_Raw.xlsx", [{
+        name: tr("raw_sheet"),
+        columns: RAW_COLS,
+        rows: state.rawRows,
+      }]);
+    }
+
+    function exportBundle() {
+      if (!state.rawRows.length) return alert(tr("choose_file"));
+      downloadXlsx("HH_Visits_Bundle.xlsx", [
+        { name: tr("clean_sheet"), columns: CLEAN_COLS, rows: state.filteredRows, oasisColumn: "OASIS Required?" },
+        { name: tr("raw_sheet"), columns: RAW_COLS, rows: state.rawRows },
+      ]);
+    }
+
+    function exportDuplicateReport() {
+      if (!state.rawRows.length) return alert(tr("choose_file"));
+      const tables = state.report.tables || {};
+      const summaryRows = Object.keys(tables).length
+        ? Object.entries(tables).map(([key, rows]) => ({ [tr("col_issue_type")]: tr(key), [tr("col_rows")]: rows.length }))
+        : [{ [tr("col_issue_type")]: tr("report_none"), [tr("col_rows")]: 0 }];
+      const sheets = [{
+        name: tr("summary_sheet"),
+        columns: [tr("col_issue_type"), tr("col_rows")],
+        rows: summaryRows,
+      }];
+      for (const key of REPORT_KEYS) {
+        if (!(key in tables)) continue;
+        const rows = tables[key];
+        const columns = key === "report_same_patient_time" ? CLEAN_COLS : RAW_COLS;
+        sheets.push({ name: tr(key), columns, rows, oasisColumn: key === "report_same_patient_time" ? "OASIS Required?" : null });
+      }
+      downloadXlsx("Duplicate_Report.xlsx", sheets);
+    }
+
+    function bindEvents() {
+      $("languageSelect").addEventListener("change", (event) => setLanguage(event.target.value));
+      $("icsInput").addEventListener("change", (event) => handleFile(event.target.files[0]));
+      $("resetButton").addEventListener("click", resetData);
+      $("includeCancelled").addEventListener("change", reparseCurrentFile);
+      $("presetSelect").addEventListener("change", (event) => setPreset(event.target.value));
+      $("dateFrom").addEventListener("change", () => {
+        $("presetSelect").value = "custom";
+        applyFilters();
+      });
+      $("dateTo").addEventListener("change", () => {
+        $("presetSelect").value = "custom";
+        applyFilters();
+      });
+      document.querySelectorAll("[data-tab]").forEach((button) => {
+        button.addEventListener("click", () => {
+          document.querySelectorAll(".tab-button").forEach((x) => x.classList.remove("active"));
+          document.querySelectorAll(".tab-panel").forEach((x) => x.classList.remove("active"));
+          button.classList.add("active");
+          $(`${button.dataset.tab}Panel`).classList.add("active");
+        });
+      });
+      $("settingsButton").addEventListener("click", openRulesModal);
+      $("closeRules").addEventListener("click", closeRulesModal);
+      $("cancelRules").addEventListener("click", closeRulesModal);
+      $("saveRules").addEventListener("click", saveRulesFromModal);
+      $("rulesModal").addEventListener("click", (event) => {
+        if (event.target === $("rulesModal")) closeRulesModal();
+      });
+      $("addRule").addEventListener("click", () => updateRulesTable((rules) => {
+        rules.push({ code: "", keywords: [], amount: 0, oasis: false });
+        return rules.length - 1;
+      }));
+      $("deleteRule").addEventListener("click", () => updateRulesTable((rules, selected) => {
+        if (selected >= 0) rules.splice(selected, 1);
+        return Math.min(selected, rules.length - 1);
+      }));
+      $("moveRuleUp").addEventListener("click", () => updateRulesTable((rules, selected) => {
+        if (selected > 0) {
+          [rules[selected - 1], rules[selected]] = [rules[selected], rules[selected - 1]];
+          return selected - 1;
+        }
+        return selected;
+      }));
+      $("moveRuleDown").addEventListener("click", () => updateRulesTable((rules, selected) => {
+        if (selected >= 0 && selected < rules.length - 1) {
+          [rules[selected + 1], rules[selected]] = [rules[selected], rules[selected + 1]];
+          return selected + 1;
+        }
+        return selected;
+      }));
+      $("resetRules").addEventListener("click", () => renderRulesTable(cloneRules(DEFAULT_RULES)));
+      $("exportSettings").addEventListener("click", exportSettingsFile);
+      $("importSettings").addEventListener("click", () => $("importSettingsInput").click());
+      $("importSettingsInput").addEventListener("change", (event) => importSettingsFile(event.target.files[0]));
+      $("exportClean").addEventListener("click", exportClean);
+      $("exportRaw").addEventListener("click", exportRaw);
+      $("exportBundle").addEventListener("click", exportBundle);
+      $("exportDup").addEventListener("click", exportDuplicateReport);
+    }
+
+    bindEvents();
+    setLanguage(state.lang);
+    setPreset("all");
+  </script>
+</body>
+</html>

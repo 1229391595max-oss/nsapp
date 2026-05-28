@@ -1,0 +1,289 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//ICS Visits Manager//Sample Test Calendar//EN
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+BEGIN:VEVENT
+UID:test-visit-001@example.local
+DTSTAMP:20260501T080000Z
+DTSTART;TZID=America/Chicago:20260601T090000
+DTEND;TZID=America/Chicago:20260601T100000
+SUMMARY:Alice Morgan - SOC
+LOCATION:100 Maple St
+DESCRIPTION:Sample test visit only. No real patient information.
+END:VEVENT
+BEGIN:VEVENT
+UID:test-visit-002@example.local
+DTSTAMP:20260501T080100Z
+DTSTART;TZID=America/Chicago:20260601T103000
+DTEND;TZID=America/Chicago:20260601T111500
+SUMMARY:Brian Carter - Follow Up
+LOCATION:220 Oak Ave
+DESCRIPTION:Sample test visit only. No real patient information.
+END:VEVENT
+BEGIN:VEVENT
+UID:test-visit-003@example.local
+DTSTAMP:20260501T080200Z
+DTSTART;TZID=America/Chicago:20260601T130000
+DTEND;TZID=America/Chicago:20260601T140000
+SUMMARY:Clara Jenkins - RECERT
+LOCATION:45 Pine Rd
+DESCRIPTION:Sample test visit only. No real patient information.
+END:VEVENT
+BEGIN:VEVENT
+UID:test-visit-004@example.local
+DTSTAMP:20260501T080300Z
+DTSTART;TZID=America/Chicago:20260602T083000
+DTEND;TZID=America/Chicago:20260602T091500
+SUMMARY:Daniel Brooks - IV
+LOCATION:78 Cedar Ln
+DESCRIPTION:Sample test visit only. No real patient information.
+END:VEVENT
+BEGIN:VEVENT
+UID:test-visit-005@example.local
+DTSTAMP:20260501T080400Z
+DTSTART;TZID=America/Chicago:20260602T100000
+DTEND;TZID=America/Chicago:20260602T110000
+SUMMARY:Emma Price - DC
+LOCATION:19 Birch Ct
+DESCRIPTION:Sample test visit only. No real patient information.
+END:VEVENT
+BEGIN:VEVENT
+UID:test-visit-006@example.local
+DTSTAMP:20260501T080500Z
+DTSTART;TZID=America/Chicago:20260602T113000
+DTEND;TZID=America/Chicago:20260602T121500
+SUMMARY:Frank Rivera - F/U
+LOCATION:302 Walnut Dr
+DESCRIPTION:Sample test visit only. No real patient information.
+END:VEVENT
+BEGIN:VEVENT
+UID:test-visit-007@example.local
+DTSTAMP:20260501T080600Z
+DTSTART;TZID=America/Chicago:20260603T090000
+DTEND;TZID=America/Chicago:20260603T100000
+SUMMARY:Grace Lee - ROC
+LOCATION:510 Elm St
+DESCRIPTION:Sample test visit only. No real patient information.
+END:VEVENT
+BEGIN:VEVENT
+UID:test-visit-008@example.local
+DTSTAMP:20260501T080700Z
+DTSTART;TZID=America/Chicago:20260603T103000
+DTEND;TZID=America/Chicago:20260603T113000
+SUMMARY:Henry Adams - SOC
+LOCATION:88 Spruce Way
+DESCRIPTION:Sample test visit only. No real patient information.
+END:VEVENT
+BEGIN:VEVENT
+UID:test-visit-009@example.local
+DTSTAMP:20260501T080800Z
+DTSTART;TZID=America/Chicago:20260603T130000
+DTEND;TZID=America/Chicago:20260603T134500
+SUMMARY:Irene Bell - FU
+LOCATION:901 Willow Pl
+DESCRIPTION:Sample test visit only. No real patient information.
+END:VEVENT
+BEGIN:VEVENT
+UID:test-visit-010@example.local
+DTSTAMP:20260501T080900Z
+DTSTART;TZID=America/Chicago:20260604T083000
+DTEND;TZID=America/Chicago:20260604T093000
+SUMMARY:Jason Kim - RECERT
+LOCATION:14 Aspen Cir
+DESCRIPTION:Sample test visit only. No real patient information.
+END:VEVENT
+BEGIN:VEVENT
+UID:test-visit-011@example.local
+DTSTAMP:20260501T081000Z
+DTSTART;TZID=America/Chicago:20260604T100000
+DTEND;TZID=America/Chicago:20260604T104500
+SUMMARY:Karen Foster - IV
+LOCATION:677 Lakeview Dr
+DESCRIPTION:Sample test visit only. No real patient information.
+END:VEVENT
+BEGIN:VEVENT
+UID:test-visit-012@example.local
+DTSTAMP:20260501T081100Z
+DTSTART;TZID=America/Chicago:20260604T120000
+DTEND;TZID=America/Chicago:20260604T130000
+SUMMARY:Leo Martinez - DC
+LOCATION:35 Meadow Ln
+DESCRIPTION:Sample test visit only. No real patient information.
+END:VEVENT
+BEGIN:VEVENT
+UID:test-visit-013@example.local
+DTSTAMP:20260501T081200Z
+DTSTART;TZID=America/Chicago:20260605T090000
+DTEND;TZID=America/Chicago:20260605T100000
+SUMMARY:Mia Thompson - SOC
+LOCATION:742 Highland Ave
+DESCRIPTION:Sample test visit only. No real patient information.
+END:VEVENT
+BEGIN:VEVENT
+UID:test-visit-014@example.local
+DTSTAMP:20260501T081300Z
+DTSTART;TZID=America/Chicago:20260605T103000
+DTEND;TZID=America/Chicago:20260605T111500
+SUMMARY:Noah Bennett - Follow Up
+LOCATION:63 River Rd
+DESCRIPTION:Sample test visit only. No real patient information.
+END:VEVENT
+BEGIN:VEVENT
+UID:test-visit-015@example.local
+DTSTAMP:20260501T081400Z
+DTSTART;TZID=America/Chicago:20260605T130000
+DTEND;TZID=America/Chicago:20260605T140000
+SUMMARY:Olivia Hughes - ROC
+LOCATION:870 Park Blvd
+DESCRIPTION:Sample test visit only. No real patient information.
+END:VEVENT
+BEGIN:VEVENT
+UID:test-visit-016@example.local
+DTSTAMP:20260501T081500Z
+DTSTART;TZID=America/Chicago:20260608T083000
+DTEND;TZID=America/Chicago:20260608T093000
+SUMMARY:Peter Collins - RECERT
+LOCATION:25 Forest Ct
+DESCRIPTION:Sample test visit only. No real patient information.
+END:VEVENT
+BEGIN:VEVENT
+UID:test-visit-017@example.local
+DTSTAMP:20260501T081600Z
+DTSTART;TZID=America/Chicago:20260608T100000
+DTEND;TZID=America/Chicago:20260608T104500
+SUMMARY:Quinn Edwards - IV
+LOCATION:118 Sunset St
+DESCRIPTION:Sample test visit only. No real patient information.
+END:VEVENT
+BEGIN:VEVENT
+UID:test-visit-018@example.local
+DTSTAMP:20260501T081700Z
+DTSTART;TZID=America/Chicago:20260608T113000
+DTEND;TZID=America/Chicago:20260608T121500
+SUMMARY:Rachel Green - FU
+LOCATION:404 Garden Ave
+DESCRIPTION:Sample test visit only. No real patient information.
+END:VEVENT
+BEGIN:VEVENT
+UID:test-visit-019@example.local
+DTSTAMP:20260501T081800Z
+DTSTART;TZID=America/Chicago:20260609T090000
+DTEND;TZID=America/Chicago:20260609T100000
+SUMMARY:Samuel Reed - SOC
+LOCATION:9 North St
+DESCRIPTION:Sample test visit only. No real patient information.
+END:VEVENT
+BEGIN:VEVENT
+UID:test-visit-020@example.local
+DTSTAMP:20260501T081900Z
+DTSTART;TZID=America/Chicago:20260609T103000
+DTEND;TZID=America/Chicago:20260609T111500
+SUMMARY:Tina Scott - F/U
+LOCATION:800 South Ave
+DESCRIPTION:Sample test visit only. No real patient information.
+END:VEVENT
+BEGIN:VEVENT
+UID:test-visit-021@example.local
+DTSTAMP:20260501T082000Z
+DTSTART;TZID=America/Chicago:20260609T130000
+DTEND;TZID=America/Chicago:20260609T140000
+SUMMARY:Uma Patel - DC
+LOCATION:52 East Dr
+DESCRIPTION:Sample test visit only. No real patient information.
+END:VEVENT
+BEGIN:VEVENT
+UID:test-visit-022@example.local
+DTSTAMP:20260501T082100Z
+DTSTART;TZID=America/Chicago:20260610T083000
+DTEND;TZID=America/Chicago:20260610T093000
+SUMMARY:Victor Young - ROC
+LOCATION:314 West Ln
+DESCRIPTION:Sample test visit only. No real patient information.
+END:VEVENT
+BEGIN:VEVENT
+UID:test-visit-023@example.local
+DTSTAMP:20260501T082200Z
+DTSTART;TZID=America/Chicago:20260610T100000
+DTEND;TZID=America/Chicago:20260610T110000
+SUMMARY:Wendy Hall - RECERT
+LOCATION:606 Center St
+DESCRIPTION:Sample test visit only. No real patient information.
+END:VEVENT
+BEGIN:VEVENT
+UID:test-visit-024@example.local
+DTSTAMP:20260501T082300Z
+DTSTART;TZID=America/Chicago:20260610T113000
+DTEND;TZID=America/Chicago:20260610T121500
+SUMMARY:Xavier Long - IV
+LOCATION:77 Valley Rd
+DESCRIPTION:Sample test visit only. No real patient information.
+END:VEVENT
+BEGIN:VEVENT
+UID:test-visit-025@example.local
+DTSTAMP:20260501T082400Z
+DTSTART;TZID=America/Chicago:20260611T090000
+DTEND;TZID=America/Chicago:20260611T100000
+SUMMARY:Yara Flores - SOC
+LOCATION:500 Ridge Ave
+DESCRIPTION:Sample test visit only. No real patient information.
+END:VEVENT
+BEGIN:VEVENT
+UID:test-visit-026@example.local
+DTSTAMP:20260501T082500Z
+DTSTART;TZID=America/Chicago:20260611T103000
+DTEND;TZID=America/Chicago:20260611T111500
+SUMMARY:Zoe Ward - Follow Up
+LOCATION:39 Creek Ln
+DESCRIPTION:Sample test visit only. No real patient information.
+END:VEVENT
+BEGIN:VEVENT
+UID:test-cancelled-027@example.local
+DTSTAMP:20260501T082600Z
+DTSTART;TZID=America/Chicago:20260611T130000
+DTEND;TZID=America/Chicago:20260611T140000
+SUMMARY:Cancelled - Aaron Stone - SOC
+STATUS:CANCELLED
+LOCATION:11 Test Cancel Rd
+DESCRIPTION:Cancelled sample event. Should appear in Raw and Duplicate Report, not Clean by default.
+END:VEVENT
+BEGIN:VEVENT
+UID:test-multiversion-028@example.local
+DTSTAMP:20260501T082700Z
+SEQUENCE:1
+LAST-MODIFIED:20260501T082700Z
+DTSTART;TZID=America/Chicago:20260612T090000
+DTEND;TZID=America/Chicago:20260612T100000
+SUMMARY:Betty James - FU
+LOCATION:1 Old Address Rd
+DESCRIPTION:Older version of this event. The app should keep the newer version.
+END:VEVENT
+BEGIN:VEVENT
+UID:test-multiversion-028@example.local
+DTSTAMP:20260501T092700Z
+SEQUENCE:2
+LAST-MODIFIED:20260501T092700Z
+DTSTART;TZID=America/Chicago:20260612T090000
+DTEND;TZID=America/Chicago:20260612T100000
+SUMMARY:Betty James - FU
+LOCATION:2 New Address Rd
+DESCRIPTION:Newer version of this event. This should be kept after de-duplication.
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260501T102700Z
+DTSTART;TZID=America/Chicago:20260612T103000
+DTEND;TZID=America/Chicago:20260612T113000
+SUMMARY:Caleb Fisher - SOC
+LOCATION:404 Missing UID Ave
+DESCRIPTION:Sample event with no UID. This should appear in the missing UID report.
+END:VEVENT
+BEGIN:VEVENT
+UID:test-same-patient-time-030@example.local
+DTSTAMP:20260501T112700Z
+DTSTART;TZID=America/Chicago:20260605T090000
+DTEND;TZID=America/Chicago:20260605T094500
+SUMMARY:Mia Thompson - FU
+LOCATION:742 Highland Ave
+DESCRIPTION:Same patient and same start time as another event. This should appear in the suspected duplicate report.
+END:VEVENT
+END:VCALENDAR

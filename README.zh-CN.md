@@ -21,24 +21,33 @@
 > ⚠️ **已知问题（正在修复）**
 > 测试中发现：打包好的 `.app` 在和打包机芯片架构不同的 Mac 上可能无法启动（比如在 Intel Mac 上跑 ARM 版本的包，或反过来）。我们还在尝试做一个稳定的跨架构构建方案。
 > 如果你遇到这个问题，请在 [Issues](https://github.com/1229391595max-oss/nsapp/issues) 或 [Discussions](https://github.com/1229391595max-oss/nsapp/discussions) 留言，告诉我们你的 Mac 型号 + macOS 版本 + 具体报错。
-> 临时解决办法：直接用源码跑（`python nurseapp_qt.py`），不受芯片架构限制。
+> 临时解决办法：使用单文件 HTML 版本（`ics_visits_manager.html`），或直接用源码跑（`python nurseapp_qt.py`），两者都不受打包 `.app` 的芯片架构问题影响。
 
 ## 功能
 
 - **解析 `.ics` 文件** — 提取每个 `VEVENT`（日期、时间、病人、访视类型、地点）
 - **自动计费** — 按访视类型计算金额（用户可自定义，每种类型默认 $x）
+- **规则备份 / 转移** — 可以把访视类型设置导出或导入为本地 `.json` 文件
 - **OASIS 自动标记** — SOC / DC / RECERT / ROC 自动标为需要 OASIS
 - **重复 & 取消事件报告** — 同 UID 多版本、`STATUS:CANCELLED`（"删了又回来"）、UID 缺失、同病人同时间冲突
 - **日期范围筛选** — 本日 / 本周 / 本月 / 上月 / 全部 / 自定义
 - **Excel 导出** — Clean（带金额 + OASIS 上色）、Raw（完整原始字段）、Bundle（两个 Sheet）、单独的重复检测报告
 - **原生 macOS UI**，PyQt6 实现，不需要打开浏览器
+- **单文件 HTML 版本** — 完全离线、不需要安装、不需要 Python，也不会遇到 macOS 签名 / 芯片架构问题
 
-## 两个版本
+## 可用版本
 
 | 文件 | 界面 | 说明 |
 |------|------|------|
 | `nurseapp_qt.py` | 原生 PyQt6 窗口 | **推荐**，可以打包成 `.app` |
+| `ics_visits_manager.html` | 浏览器本地文件 | 最适合电脑小白，双击打开，完全离线 |
 | `nurseapp.py` | Streamlit（浏览器） | 最初的原型，仍能用 |
+
+## 使用 HTML 版本
+
+下载或复制 `ics_visits_manager.html`，然后双击打开。它会在浏览器里运行，但所有 `.ics` 解析和 Excel 生成都只发生在用户本机。
+
+这个版本最适合分享给不懂技术的人，因为它不需要 Python、不需要 PyInstaller、不需要应用签名、不需要终端命令，也不需要分别区分 Intel / Apple Silicon 版本。
 
 ## 环境要求
 
@@ -111,6 +120,7 @@ xattr -cr ~/Desktop/"ICS Visits 管理.app"
 ```
 .
 ├── nurseapp_qt.py     # 主程序（PyQt6）
+├── ics_visits_manager.html # 单文件离线 HTML 版本
 ├── nurseapp.py        # Streamlit 版本（旧）
 ├── run_app.py         # Streamlit 启动器
 ├── build_app.sh       # macOS .app 打包脚本
@@ -130,6 +140,8 @@ xattr -cr ~/Desktop/"ICS Visits 管理.app"
 | FU       | $x    | NO             |
 
 金额可以由每位用户通过应用内的 ⚙️ 访视类型设置自行定义。每位用户可以自己配置代号、匹配关键词、价格和 OASIS 标记，设置会本地保存，下次打开依然生效。
+
+用户也可以把自己的访视类型设置导出为 `ics-visits-settings.json`，之后在另一个浏览器或另一台电脑上导入继续使用。
 
 访视类型从日历事件的 summary 解析，格式为 `病人名 - 访视类型`。`Follow Up` / `F/U` / `FU` 这类变体会统一归到 `FU`。
 
